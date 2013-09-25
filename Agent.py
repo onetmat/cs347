@@ -21,7 +21,6 @@ class Agent:
 
    ## Determine if the current state is the goal state
    def InGoalState(self):
-      goalState = False
       # for this puzzle, the goal has been reached when
       # the current state has a wriggler with tail number 0
       # whose head or tail positions coincide with the bottom
@@ -32,10 +31,7 @@ class Agent:
 
       blueWriggler = self.currentSearchNode.state.wrigglers[self.currentSearchNode.state.indexOfBlue]
 
-      if botRightTuple == blueWriggler.head.pos or botRightTuple == blueWriggler.tail.pos:
-         goalState = True
-
-      return goalState
+      return blueWriggler.HeadOrTailAtPos(botRightTuple)
 
    ## Perform a BFTS for goal node
    def BTFS_Solve(self):

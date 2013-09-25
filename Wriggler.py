@@ -158,6 +158,15 @@ class Wriggler:
          newSegment = BodySegment()
          newSegment.CopyFrom(otherSegment)
          self.segments.append(newSegment)
+
+   ## Determine if this wriggler's head or tail
+   # resides at a given position. Used during goal state determination
+   # @param pos (col, row) position to be tested
+   def HeadOrTailAtPos(self, pos):
+      headAtPos = pos == self.head.pos
+      tailAtPos = pos == self.tail.pos
+
+      return tailAtPos or headAtPos
       
 
    ## ToString method that prints something useful
