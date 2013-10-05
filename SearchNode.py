@@ -60,6 +60,9 @@ class SearchNode:
    # SearchNode instance. Used to represent a "cost" function
    def __le__(self, other):
       print "SearchNode being compared!"
+      return self.state.GetHeuristicCost() <= other.state.GetHeuristicCost()
+
+   def __lt__(self, other):
       return self.state.GetHeuristicCost() < other.state.GetHeuristicCost()
 
    def __eq__(self, other):

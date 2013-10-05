@@ -32,7 +32,7 @@ class Agent:
       evalNode = self.frontier.pop()
 
       # now, while the next node is not a goal node:
-      while not evalNode.ContainsGoalState():
+      while not evalNode.ContainsGoalState() and len(self.frontier) > 0:
          # generate all actions
          nextMoves = evalNode.Actions()
 
@@ -40,10 +40,41 @@ class Agent:
          for nextMove in nextMoves:
             # generate a SearchNode
             newNode = self.GenerateSearchNodeFromMove(evalNode, nextMove)
+            nodeHash = newNode.GetNodeHash()
+            addNodeToFrontier = False
             # check if it's already in the explored set
-            # XXX XXX XXX XXX YOU LEFT OFF HERE! 
+            # Note that it is not possible to generate a state that
+            # appears in both the frontier and explored set due to the
+            # nature of this puzzle
             if self.explored.has_key(nodeHash):
-               # if 
+               # should this node's path cost supersede it?
+               if newNode < self.explored[nodeHash]:
+                  # if so, remove the node on the explored set
+                  self.explored.pop(nodeHash)
+                  addNodeToFrontier = True
+            else:
+               # not in explored set, go ahead and add to Frontier
+               addNodeToFrontier = True
+
+            if addNodeToFrontier:
+               # add node to frontier in sorted heap fashion
+               heapq.heappush(self.frontier, newNode)
+
+         # add evaluated node to explored set
+         self.explored[evalNode.GetNodeHash()] = evalNode
+         
+         # pop the next node to be evaluated from the queue
+         if len(self.frontier) > 0:
+            evalNode = heapq.heappop(self.frontier)
+         else:
+            # ... just in case, set eval node to none and break
+            evalNode = None
+            break
+
+      # return goal node. algorithm is complete for same reason
+      # ID-DFTS is complete
+      return evalNode
+
 
    ## Perform a ID-DTFS search for the goal node
    def IterativeDepthDTFS_Solve(self):
