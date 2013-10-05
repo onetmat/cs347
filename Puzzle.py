@@ -54,7 +54,7 @@ class Puzzle:
    ## Retrieve the stored hash value representing
    # this puzzle
    def GetPuzzleHash(self):
-      return self.hashValue
+      return self.hashValue.hexdigest()
 
    ## Combine the row and col to get the index of the
    # specified tile in the list

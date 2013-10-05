@@ -32,7 +32,7 @@ class Agent:
       evalNode = self.frontier.pop()
 
       # now, while the next node is not a goal node:
-      while not evalNode.ContainsGoalState() and len(self.frontier) > 0:
+      while not evalNode.ContainsGoalState():
          # generate all actions
          nextMoves = evalNode.Actions()
 
@@ -46,11 +46,11 @@ class Agent:
             # Note that it is not possible to generate a state that
             # appears in both the frontier and explored set due to the
             # nature of this puzzle
-            if self.explored.has_key(nodeHash):
+            if explored.has_key(nodeHash):
                # should this node's path cost supersede it?
-               if newNode < self.explored[nodeHash]:
+               if newNode < explored[nodeHash]:
                   # if so, remove the node on the explored set
-                  self.explored.pop(nodeHash)
+                  explored.pop(nodeHash)
                   addNodeToFrontier = True
             else:
                # not in explored set, go ahead and add to Frontier
@@ -61,7 +61,7 @@ class Agent:
                heapq.heappush(self.frontier, newNode)
 
          # add evaluated node to explored set
-         self.explored[evalNode.GetNodeHash()] = evalNode
+         explored[evalNode.GetNodeHash()] = evalNode
          
          # pop the next node to be evaluated from the queue
          if len(self.frontier) > 0:

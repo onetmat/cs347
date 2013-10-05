@@ -1,7 +1,7 @@
-## @file Anderson_DTFS.py
+## @file Anderson_GBFS.py
 # @author Mathew Anderson
 # @brief Implementation of main method
-# for CS347SP14 Puzzle Project part II - ID-DFTS
+# for CS347SP14 Puzzle Project part III - Greedy Best First Search
 
 from PuzzleReader import ReadPuzzle
 from WrigglerReader import FindWrigglers
@@ -25,7 +25,7 @@ if initialPuzzle is not None:
 
       smith = Agent(initialSearchNode)
       startTime = time.clock()
-      foundGoal = smith.IterativeDepthDTFS_Solve()
+      foundGoal = smith.GreedyBestFirstGraphSearch()
       endTime = time.clock()
 
       if foundGoal is not None:

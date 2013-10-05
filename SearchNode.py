@@ -39,7 +39,7 @@ class SearchNode:
 
    ## Return a hash representation of this SearchNode
    def GetNodeHash(self):
-      return state.state.GetPuzzleHash()
+      return self.state.GetPuzzleHash()
 
    ## For the puzzle project, a SearchNode contains a goal state if
    # the blue wriggler's head or tail is in the lower right hand corner.
