@@ -12,8 +12,7 @@ from Move import Move
 # Used to maintain a strict weak ordering on 
 import heapq
 
-## This Agent class will form the foundation
-# of all Agent classes, but right now is specialized to BFTS
+## Perform a search on the puzzle.
 class Agent:
 
    ## ctor initializes all to empty
@@ -21,6 +20,50 @@ class Agent:
    def __init__(self, initialSearchNode):
       self.currentSearchNode = None
       self.frontier = [initialSearchNode]
+
+   ## Perform an A* graph search for the goal node
+   def AStarSearch(self):
+      # frontier contains the initial search node,
+      # initialize an explored set as a hash table
+      explored = dict()
+
+      # remove the initial searchnode
+      evalNode = self.frontier.pop()
+      evalNode.useHeuristicAndPathCost = True
+
+      # now, while the next node is not a goal node:
+      while not evalNode.ContainsGoalState():
+         # generate all actions
+         nextMoves = evalNode.Actions()
+
+         # and for each action
+         for nextMove in nextMoves:
+            # generate a SearchNode
+            newNode = self.GenerateSearchNodeFromMove(evalNode, nextMove)
+            newNode.useHeuristicAndPathCost = True
+            nodeHash = newNode.GetNodeHash()
+            # check if it's already in the explored set
+            # Note that it is not possible to generate a state that
+            # appears in both the frontier and explored set due to the
+            # nature of this puzzle
+            if not explored.has_key(nodeHash):
+               # not in explored set, go ahead and add to Frontier
+               heapq.heappush(self.frontier, newNode)
+
+         # add evaluated node to explored set
+         explored[evalNode.GetNodeHash()] = evalNode
+         
+         # pop the next node to be evaluated from the queue
+         if len(self.frontier) > 0:
+            evalNode = heapq.heappop(self.frontier)
+         else:
+            # ... just in case, set eval node to none and break
+            evalNode = None
+            break
+
+      # return goal node. algorithm is complete for same reason
+      # ID-DFTS is complete
+      return evalNode
 
    ## Perform a greedy, best-first search for the goal node
    def GreedyBestFirstGraphSearch(self):

@@ -21,6 +21,12 @@ class SearchNode:
       self.parent = parent
       self.action = action
       self.pathCost = pathCost
+      self.useHeuristicAndPathCost = False
+
+   ## Return the cost of the state heuristic plus the path cost required
+   # to get to this node
+   def GetHeuristicAndPathCost(self):
+      return self.state.GetHeuristicCost() + self.pathCost
 
    ## Query the state for all possible wriggler moves and return them
    def Actions(self):
@@ -59,14 +65,21 @@ class SearchNode:
    ## Determine a strict, weak ordering between this and another
    # SearchNode instance. Used to represent a "cost" function
    def __le__(self, other):
-      print "SearchNode being compared!"
       return self.state.GetHeuristicCost() <= other.state.GetHeuristicCost()
 
    def __lt__(self, other):
-      return self.state.GetHeuristicCost() < other.state.GetHeuristicCost()
+      lessThan = False
+      if self.useHeuristicAndPathCost:
+         print "A*"
+         lessThan = \
+            self.GetHeuristicAndPathCost() < other.GetHeuristicAndPathCost()
+      else:
+         print "Just Heuristic"
+         lessThan = \
+            self.state.GetHeuristicCost() < other.state.GetHeuristicCost()
+      return lessThan
 
    def __eq__(self, other):
-      print "SearchNode equality!"
       return self.state.GetHeuristicCost() == other.state.GetHeuristicCost()
 
    ## @var state
@@ -80,6 +93,10 @@ class SearchNode:
 
    ## @var pathCost
    # The cost of getting from the root to this node
+
+   ## @var useHeuristicAndPathCost
+   # Set during A* search, uses both heuristic cost and
+   # path cost of this node when ordering nodes
 
 if __name__ == "__main__":
    # Test backtracking
