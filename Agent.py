@@ -41,7 +41,7 @@ class Agent:
             # generate a SearchNode
             newNode = self.GenerateSearchNodeFromMove(evalNode, nextMove)
             newNode.useHeuristicAndPathCost = True
-            nodeHash = newNode.GetNodeHash()
+            nodeHash = newNode.state.GetContinuousString()
             # check if it's already in the explored set
             # Note that it is not possible to generate a state that
             # appears in both the frontier and explored set due to the
@@ -49,13 +49,20 @@ class Agent:
             if not explored.has_key(nodeHash):
                # not in explored set, go ahead and add to Frontier
                heapq.heappush(self.frontier, newNode)
+            else:
+               seenNode = explored[nodeHash]
+               if seenNode.totalCost > newNode.totalCost:
+                  heapq.heappush(self.frontier, newNode)
+                  
 
          # add evaluated node to explored set
-         explored[evalNode.GetNodeHash()] = evalNode
+         explored[evalNode.state.GetContinuousString()] = evalNode
          
          # pop the next node to be evaluated from the queue
          if len(self.frontier) > 0:
+            print "Frontier is " + str(len(self.frontier))
             evalNode = heapq.heappop(self.frontier)
+            print "Path cost is " + str(evalNode.pathCost)
          else:
             # ... just in case, set eval node to none and break
             evalNode = None
@@ -91,13 +98,20 @@ class Agent:
             if not explored.has_key(nodeHash):
                # not in explored set, go ahead and add to Frontier
                heapq.heappush(self.frontier, newNode)
+            else:
+               seenNode = explored[nodeHash]
+               if seenNode.state.GetHeuristicCost() > newNode.state.GetHeuristicCost():
+                  print "Pushing lower cost new node"
+                  heapq.heappush(self.frontier, newNode)
 
          # add evaluated node to explored set
          explored[evalNode.GetNodeHash()] = evalNode
          
          # pop the next node to be evaluated from the queue
          if len(self.frontier) > 0:
+            print "Frontier is " + str(len(self.frontier))
             evalNode = heapq.heappop(self.frontier)
+            print "Heuristic cost " + str(evalNode.state.heuristic)
          else:
             # ... just in case, set eval node to none and break
             evalNode = None

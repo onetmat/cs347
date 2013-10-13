@@ -15,6 +15,8 @@ class Puzzle:
 
    ## Symbolic constant representing an empty square
    EMPTY_SQUARE = 'e'
+   ## Symbolic constant for wall square
+   WALL_SQUARE = 'x'
 
    ## Ctor initializes all member vars to 0/empty
    def __init__(self):
@@ -50,6 +52,20 @@ class Puzzle:
       # and hash it
       tileStr = ''.join(self.puzzle)
       self.hashValue.update(tileStr)
+
+   ## Make any wriggler's body, etc an x
+   def BlockOffWrigglers(self):
+      newPuzzle = []
+      for ch in self.puzzle:
+         if ch.isdigit():
+            newPuzzle.append('w')
+         elif ch in ['<', '^', '>', 'v']:
+            newPuzzle.append('w')
+         elif ch in ['U', 'R', 'L', 'D']:
+            newPuzzle.append('w')
+         else:
+            newPuzzle.append(ch)
+      self.puzzle = newPuzzle
 
    ## Retrieve the stored hash value representing
    # this puzzle
@@ -104,6 +120,22 @@ class Puzzle:
          self.SetTile(segment.pos[0], \
                       segment.pos[1], \
                       segment.dirOfNext)
+
+   ## Put a hash-able version of the wrigglers on the board
+   # @param wriggler the wriggler to plae
+   def PlaceWrigglerAllNumber(self,wriggler):
+      self.SetTile(wriggler.head.pos[0], \
+                   wriggler.head.pos[1], \
+                   wriggler.tail.idNumber)
+      
+      self.SetTile(wriggler.tail.pos[0], \
+                   wriggler.tail.pos[1], \
+                   wriggler.tail.idNumber)
+
+      for segment in wriggler.segments:
+         self.SetTile(segment.pos[0], \
+                      segment.pos[1], \
+                      wriggler.tail.idNumber)
 
    ## Given a col, row, and desired char, update the puzzle
    # @param col Column of tile to set

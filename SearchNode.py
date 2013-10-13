@@ -22,6 +22,7 @@ class SearchNode:
       self.action = action
       self.pathCost = pathCost
       self.useHeuristicAndPathCost = False
+      self.totalCost = self.GetHeuristicAndPathCost()
 
    ## Return the cost of the state heuristic plus the path cost required
    # to get to this node
@@ -70,11 +71,9 @@ class SearchNode:
    def __lt__(self, other):
       lessThan = False
       if self.useHeuristicAndPathCost:
-         print "A*"
          lessThan = \
-            self.GetHeuristicAndPathCost() < other.GetHeuristicAndPathCost()
+            self.totalCost < other.totalCost
       else:
-         print "Just Heuristic"
          lessThan = \
             self.state.GetHeuristicCost() < other.state.GetHeuristicCost()
       return lessThan
