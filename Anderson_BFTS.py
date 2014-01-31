@@ -14,4 +14,10 @@ puzzleFile = raw_input('Enter filename of puzzle: ')
 initialState = ReadPuzzle(puzzleFile)
 
 # attempt to extract all wriggler info
-wrigglers = FindWrigglers(puzzle)
+wrigglers = FindWrigglers(initialState)
+
+# Initial debug - just print the puzzle and the wrigglers
+initialState.PrintPuzzle()
+
+for wrig in wrigglers:
+   print wrig
