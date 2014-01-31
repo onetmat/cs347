@@ -32,6 +32,9 @@ def FindWrigglers(puzzle):
       # invalid Puzzle passed, return empty string
       print "Unable to find any Wrigglers in arg passed: " + e.message
       wrigglers = []
+   except Exception as e:
+      print "Something wrong while extraction specific Wriggler: " + e.message
+      wrigglers = []
    return wrigglers
 
 ## Given a (col, row) tuple representation the location of a wriggler
@@ -40,7 +43,47 @@ def FindWrigglers(puzzle):
 # was found
 # @param puzzle The puzzle instance
 def ExtractWriggler(headLocation, puzzle):
-   nextWriggler = None
+   # It all starts with the head, so extract that character
+   headChar = puzzle.GetTile(headLocation[0], headLocation[1])
+   # Create the new wriggler and store the head info
+   nextWriggler = Wriggler()
+   nextWriggler.head.dirOfNext = headChar
+   nextWriggler.head.pos = headLocation
+
+   # while we haven't found the tail
+   foundTail = False
+   currentChar = headChar
+   currentPos = headLocation
+
+   while not foundTail:
+      # Get the next position to examine
+      nextPos = GetDirectionOfNextSegment(currentChar, currentPos)
+
+      # Get the next character to examine
+      nextChar = puzzle.GetTile(nextPos[0], nextPos[1])
+
+      # if it's a body segment
+      if nextChar in BodySegment.SEGMENT_CHARS:
+         # Create a new body segment
+         nextBodySeg = BodySegment()
+         nextBodySeg.dirOfNext = nextChar
+         nextBodySeg.pos = nextPos
+         nextWriggler.segments.append(nextBodySeg)
+
+         # store the current pos and char
+         currentChar = nextChar
+         currentPos = nextPos
+         # and move on
+      else;
+         # if it's a number, it's the tail
+         try:
+            nextWriggler.tail.idNumber = int(nextChar)
+            nextWriggler.tail.pos = nextPos
+            foundTail = True
+         except:
+            # not the tail and not the body segment => problem
+            raise Exception("Encountered a non-body, non-tail char: " + nextChar)
+
    return nextWriggler
 
 ## Given a head or body segment and a current (col, row) position
