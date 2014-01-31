@@ -6,6 +6,10 @@
 # of a Wriggler. Head and Tail have implicit representations
 class BodySegment:
 
+   ## Symbolic constants for body segments
+   # these represent the direction of the next segment
+   SEGMENT_CHARS = ['^', '>', 'v', '<']
+
    ## Ctor initializes all member vars to 0
    def __init__(self):
       self.dirOfNext = 0
@@ -21,6 +25,11 @@ class BodySegment:
 # appropriate attributes for each segment of a wriggler
 # including the head and tail
 class Wriggler:
+
+   ## Symbolic constants for head segments
+   # these indicate the direction of the next body segment
+   HEAD_CHARS = ['U', 'R', 'D', 'L']
+
    ## Ctor sets all member variables to 0
    def __init__(self):
       self.head.dirOfNext = 0
