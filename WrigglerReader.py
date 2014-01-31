@@ -3,7 +3,7 @@
 # @brief Contains methods to extract wrigglers from a puzzle
 
 from Puzzle import Puzzle
-from Wriggler import BodySegment, Wriggler, Head, Tail
+from Wriggler import BodySegment, Wriggler, HEAD_CHARS, SEGMENT_CHARS
 
 ## Given a puzzle or world state, extract all Wrigglers
 # returning them in a list
@@ -14,20 +14,22 @@ def FindWrigglers(puzzle):
    # initialize loop variables
    # zero based due to indexing in Puzzle
    currCol = 0
-   currRow = 0
    # If Puzzle is valid
    try:
       # Foreach column
       while currCol < puzzle.numCols:
          # foreach row
+         currRow = 0
          while currRow < puzzle.numRows:
             # if this puzzle tile indicates a Wriggler head
-            if puzzle.GetTile(currCol, currRow) in Head.HEAD_CHARS:
+            if puzzle.GetTile(currCol, currRow) in HEAD_CHARS:
                # try to extract it
                nextWriggler = ExtractWriggler((currCol, currRow), puzzle)
                # and append it to the list if successful
                if nextWriggler is not None:
                   wrigglers.append(nextWriggler)
+            currRow += 1
+         currCol += 1
    except AttributeError as e:
       # invalid Puzzle passed, return empty string
       print "Unable to find any Wrigglers in arg passed: " + e.message
@@ -63,7 +65,7 @@ def ExtractWriggler(headLocation, puzzle):
       nextChar = puzzle.GetTile(nextPos[0], nextPos[1])
 
       # if it's a body segment
-      if nextChar in BodySegment.SEGMENT_CHARS:
+      if nextChar in SEGMENT_CHARS:
          # Create a new body segment
          nextBodySeg = BodySegment()
          nextBodySeg.dirOfNext = nextChar
@@ -146,3 +148,11 @@ if __name__ == "__main__":
    theWriggler = ExtractWriggler((0, 3), tstPuzz)
 
    print theWriggler
+
+   # Next, try to extract a wriggler from a puzzle
+   # with > 1
+   tstPuzz2 = PuzzleReader.ReadPuzzle('puzz2.pz')
+   wrigglers = FindWrigglers(tstPuzz2)
+
+   for wrig in wrigglers:
+      print wrig
