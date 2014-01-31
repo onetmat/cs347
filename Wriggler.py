@@ -21,19 +21,34 @@ class BodySegment:
    ## @var pos
    # Tuple representing the current position of a body segment
 
+## The HEAD has a special representation
+# and a position, but otherwise nothing special
+class Head:
+   ## Symbolic constants for head segments
+   # these indicate the direction of the next body segment
+   HEAD_CHARS = ['U', 'R', 'D', 'L']
+
+   ## Ctor initialize all values to 0
+   def __init__(self):
+      self.dirOfNext = 0
+      self.pos = (0, 0)
+
+   ## @var dirOfNext
+   # Character representation of the direction of the next segment
+
+   ## @var pos
+   # Position in the puzzle of the head
+
+
 ## The Wriggler class stores the locations and
 # appropriate attributes for each segment of a wriggler
 # including the head and tail
 class Wriggler:
 
-   ## Symbolic constants for head segments
-   # these indicate the direction of the next body segment
-   HEAD_CHARS = ['U', 'R', 'D', 'L']
 
    ## Ctor sets all member variables to 0
    def __init__(self):
-      self.head.dirOfNext = 0
-      self.head.pos = (0, 0)
+      self.head = Head()
 
       self.tail.idNumber = 0
       self.tail.pos = (0, 0)
