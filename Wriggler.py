@@ -2,6 +2,13 @@
 # @author Mathew Anderson
 # @brief Contains complete wriggler representation
 
+## Symbolic indices into the character representation
+# lists (below)
+UP = 0
+RIGHT = 1
+DOWN = 2
+LEFT = 3
+
 ## Symbolic constants for body segments
 # these represent the direction of the next segment
 SEGMENT_CHARS = ['^', '>', 'v', '<']
@@ -19,6 +26,51 @@ class BodySegment:
    def __init__(self):
       self.dirOfNext = 0
       self.pos = (0, 0)
+      self.myReps = SEGMENT_CHARS
+
+   ## Given a movement delta, determine which character
+   # representation is appropriate
+   # @param delta A (col, row) type that represents a recent move
+   # @note This class changes the dirOfNext variable of this class
+   # Special case because HEAD pieces have special characters
+   # Method raises a general exception if invalid delta info
+   # is passed
+   def DetermineCharacterFromDelta(self, delta):
+      try:
+         # validate input, only one non-zero entry in tuple
+         colIsChanging = delta[0] != 0
+         rowIsChanging = delta[1] != 0
+
+         # input normalized to boolean, XOR is now boolA != boolB
+         if colIsChanging != rowIsChanging:
+
+            if colIsChanging:
+               # moving left or right
+               movingLeft = delta[0] == -1
+
+               if movingLeft:
+                  self.dirOfNext = self.myReps[RIGHT]
+
+               else:
+                  # next will be to the left
+                  self.dirOfNext = self.myReps[LEFT]
+            else:
+               # moving up or down
+               movingUp = delta[1] == -1
+
+               if movingUp:
+                  # next segment will be down
+                  self.dirOfNext = self.myReps[DOWN]
+
+               else:
+                  # next segment will be up
+                  self.dirOfNext = self.myReps[UP]
+         else:
+            raise Exception("Invalid delta: " + delta)
+
+      except Exception as e:
+         raise Exception ("Failed to determine representation "\
+            + "from a given delta: " + e.message)
 
    ## @var dirOfNext
    # Symbolic representation of the direction of the next segment
@@ -26,23 +78,23 @@ class BodySegment:
    ## @var pos
    # Tuple representing the current position of a body segment
 
+   ## @var myReps
+   # Character representation of all possible "next" segments
+
 ## The HEAD has a special representation
 # and a position, but otherwise nothing special
-class Head:
+class Head(BodySegment):
 
    ## Ctor initialize all values to 0
+   # Head has custom char reps
    def __init__(self):
-      self.dirOfNext = 0
-      self.pos = (0, 0)
+      BodySegment.__init__(self)
+      self.myReps = HEAD_CHARS
 
-   ## @var dirOfNext
-   # Character representation of the direction of the next segment
-
-   ## @var pos
-   # Position in the puzzle of the head
 
 ## The TAIL has a number identifying the wriggler
 # and a position, but otherwise nothing special
+# tail never changes it's character
 class Tail:
    ## Ctor initializes everything to 0
    def __init__(self):
@@ -85,3 +137,27 @@ class Wriggler:
 
    ## @var segments
    # List of segments, where a segment is a (dir of next segment, (col, row) position)
+
+# basic testing
+if __name__ == "__main__":
+   bs = BodySegment()
+   bs.dirOfNext = '^'
+   bs.pos = (2, 3)
+
+   # Try moving down, verify char rep is lower case v
+   print "bs was: " + bs.dirOfNext
+   bs.DetermineCharacterFromDelta((0, -1))
+   if bs.dirOfNext != 'v':
+      print "FAILED"
+   print "bs is: " + bs.dirOfNext
+
+   head = Head()
+   head.dirOfNext = 'L'
+   head.pos = (1,1)
+
+   print "head was: " + head.dirOfNext
+   # trying moving down
+   head.DetermineCharacterFromDelta((0, 1))
+   if head.dirOfNext != 'U':
+      print "FAILED"
+   print "head is: " + head.dirOfNext

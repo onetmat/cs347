@@ -11,9 +11,11 @@ from Wriggler import BodySegment, Wriggler, HEAD_CHARS, SEGMENT_CHARS
 def FindWrigglers(puzzle):
    # initialize return value
    wrigglers = []
+
    # initialize loop variables
    # zero based due to indexing in Puzzle
    currCol = 0
+
    # If Puzzle is valid
    try:
       # Foreach column
@@ -28,13 +30,16 @@ def FindWrigglers(puzzle):
                # and append it to the list if successful
                if nextWriggler is not None:
                   wrigglers.append(nextWriggler)
+            # Look at next row
             currRow += 1
+         # look at next column
          currCol += 1
    except AttributeError as e:
-      # invalid Puzzle passed, return empty string
+      # invalid Puzzle passed, return empty list
       print "Unable to find any Wrigglers in arg passed: " + e.message
       wrigglers = []
    except Exception as e:
+      # General error handling, return empty list
       print "Something wrong while extraction specific Wriggler: " + e.message
       wrigglers = []
    return wrigglers
@@ -90,6 +95,8 @@ def ExtractWriggler(headLocation, puzzle):
 
 ## Given a head or body segment and a current (col, row) position
 # produce the location of the next segment
+# @param segmentChar Character representation of current segment
+# @param currentPos (col, row) of segmentChar
 def GetDirectionOfNextSegment(segmentChar, currentPos):
    # start by storing the old position in pieces
    nextCol = currentPos[0]
@@ -114,6 +121,8 @@ def GetDirectionOfNextSegment(segmentChar, currentPos):
    nextPos = (nextCol, nextRow)
    return nextPos
 
+
+# Simple testing below
 if __name__ == "__main__":
 
    # first test GetDirectionOfNextSegment
