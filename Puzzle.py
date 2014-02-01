@@ -94,6 +94,15 @@ class Puzzle:
       openTile = self.puzzle[linearIndex] == Puzzle.EMPTY_SQUARE
       return openTile
 
+   ## Determine if a position is within the bounds of the puzzle
+   # @param col The desired column
+   # @param row The desired row
+   # @return True if so, false otherwise
+   def PositionInBounds(self, col, row):
+      colInBounds = col > -1 and col < self.numCols
+      rowInBounds = row > -1 and row < self.numRows
+      return colInBounds and rowInBounds
+
    ## Print the current world state consistent with
    # the project specifications.
    def PrintPuzzle(self):

@@ -43,6 +43,8 @@ class SearchNode:
    ## @var pathCost
    # The cost of getting from the root to this node
 
+from Move import Move
+
 ## The state class contains relevant information to our puzzle assignment
 class State:
    ## Ctor tags instances, determines who is blue
@@ -52,14 +54,63 @@ class State:
       self.wrigglers = wrigglers
       self.indexOfBlue = 0
 
-
       for index, wriggler in list(enumerate(self.wrigglers)):
          if wriggler.tail.idNumber == 0:
             self.indexOfBlue = index
 
-   
+  
+   ## Determines all legal moves from this state 
+   # @return A list of all legal moves (Move objects)
    def DetermineAllLegalMoves(self):
-      pass
+      legalMoves = []
+
+      for wriggler in wrigglers:
+         wrigglerMoves = self.GetLegalMovesFromWriggler(wriggler)
+
+         if len(wrigglerMoves) > 0:
+            legalMoves.extend(wrigglerMoves)
+      
+      return legalMoves
+
+   ## Cull illegal (out of bounds/occupied) moves from a wriggler
+   # @param wriggler to check
+   # @return List of all legal moves from this state that a particular wriggler
+   # can make
+   def GetLegalMovesFromWriggler(self, wriggler):
+      allMoves = self.GetAllMovesFromWriggler(wriggler)
+      legalMoves = []
+
+      # remove out of bounds or occupied squares
+      for move in allMoves:
+
+         moveInBounds = self.puzzle.PositionInBounds(move.destColumn, move.destRow)
+         if moveInBounds:
+            tileOpen = self.puzzle.IsOpen(move.destColumn, move.destRow)
+
+            if tileOpen:
+               legalMoves.append(move)
+
+      return legalMoves
+
+   ## Determine all possible moves from a wriggler head/tail
+   # @param wriggler Data form which moves will be created
+   # @return A list of Move objects
+   def GetAllMovesFromWriggler(self, wriggler):
+      # All possible moves of moving up, down, left, right one
+      # (col, row) for each entry
+      allMoves = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+      movesFromWriggler = []
+      # generate moves from the head and tail
+      for move in allMoves:
+         headMoveDest = (wriggler.head.pos[0] + move[0], wriggler.head.pos[1] + move[1])
+         headMove = Move(wriggler.tail.idNumber, Move.HEAD, headMoveDest[0], headMoveDest[1])
+
+         tailMoveDest = (wriggler.tail.pos[0] + move[0], wriggler.tail.pos[1] + move[1])
+         tailMove = Move(wriggler.tail.idNumber, Move.HEAD, tailMoveDest[0], tailMoveDest[1])
+
+         movesFromWriggler.extend([headMove, tailMove])
+
+      return movesFromWriggler
 
    ## @var puzzle
    # The current world state
@@ -84,3 +135,16 @@ if __name__ == "__main__":
 
    for node in path:
       print node.action + " total cost: " + str(node.pathCost)
+
+   # test legal move determination
+   from PuzzleReader import ReadPuzzle
+   from WrigglerReader import FindWrigglers
+
+   puzz = ReadPuzzle('puzz1.pz')
+   wrigglers = FindWrigglers(puzz)
+   state = State(puzz, wrigglers)
+
+   allLegalMoves = state.DetermineAllLegalMoves()
+
+   for move in allLegalMoves:
+      print str(move)

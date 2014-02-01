@@ -39,6 +39,15 @@ class Move:
          # print to stdout
          print outputString
 
+   ## Same as PrintMove but works with str operator
+   def __str__(self):
+      outputString = str(self.tailNumber) + ' ' \
+                     + str(self.pieceMoved) + ' ' \
+                     + str(self.destColumn) + ' ' \
+                     + str(self.destRow) + '\n'
+
+      return outputString
+
 
    ## @var tailNumber
    # Uniquely identifies wriggler being moved
