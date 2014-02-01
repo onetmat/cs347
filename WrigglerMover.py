@@ -112,6 +112,12 @@ if __name__ == "__main__":
    # print post move
    print str(newWriggler)
 
+   # move it again to the right
+   rightMove = Move(0, Move.HEAD, 2, 3)
+
+   newWriggler = UpdateWriggler(newWriggler, rightMove)
+   print str(newWriggler)
+
    # Move on to testing the MoveWriggler method
    # First test case, bad input
    updatedWorldState = MoveWriggler(None, None, None)
