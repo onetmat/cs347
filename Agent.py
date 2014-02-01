@@ -5,6 +5,9 @@
 from SearchNode import SearchNode
 from WrigglerMover import MoveWriggler
 from SearchNode import State
+from PuzzleReader import ReadPuzzle
+from WrigglerReader import FindWrigglers
+from Move import Move
 
 ## This Agent class will form the foundation
 # of all Agent classes, but right now is specialized to BFTS
@@ -34,10 +37,38 @@ class Agent:
 
       return goalState
 
+   ## Perform a BFTS for goal node
+   # @param numIters Debug capping value
+   def BTFS_Solve(self, numIterations = None):
+      iters = 0
+
+   ## Perform one BFTS iteration
+   # DEBUGGING METHOD
+   def BTFSIteration(self):
+      # check if the current node is the goal
+      if not self.InGoalState():
+         # if not, expand the frontier
+         self.ExpandFrontier()
+         # and set the current node to the top of the frontier
+         # XXX Python doesn't have a front method, append + pop
+         # will yield last appended value...
+         self.currentSearchNode = self.frontier[0]
+         self.frontier.remove(self.frontier[0]) # This will kill my time!
+      else:
+         print "IN GOAL STATE!"
+      
+
    ## Create all possible child states from the current state
+   # XXX- BFTS specific
    def ExpandFrontier(self):
       # Query the state for all valid moves for this state
-      pass
+      allMoves = self.currentSearchNode.state.DetermineAllLegalMoves()
+
+      # for each move generate a new search node
+      for move in allMoves:
+         newSearchNode = self.GenerateSearchNodeFromMove(move)
+         # and add it to the frontier
+         self.frontier.append(newSearchNode)
 
    ## Generate a new search node given the current state
    # and a valid move
@@ -87,10 +118,38 @@ class Agent:
    # Collection of states yet to be explored
 
 # BELOW is simple testing code
+
+## Test BFTS iterations
+def TestBFTS_Iter():
+   puzz1 = ReadPuzzle('puzz1.pz')
+   wrig = FindWrigglers(puzz1)
+
+   initialState = State(puzz1, wrig)
+   initialSearchNode = SearchNode(initialState, None, None, 0)
+   ag = Agent(initialSearchNode)
+
+   print str(ag.currentSearchNode)
+   for iter in xrange(1, 10000):
+      print "ITER " + str(iter)
+      ag.BTFSIteration()
+
+      print str(ag.currentSearchNode)
+
+## Test frontier expansion
+def TestFrontierExpand():
+   puzz1 = ReadPuzzle('puzz1.pz')
+   wrig = FindWrigglers(puzz1)
+
+   initialState = State(puzz1, wrig)
+   initialSearchNode = SearchNode(initialState, None, None, 0)
+   ag = Agent(initialSearchNode)
+   ag.ExpandFrontier()
+
+   for searchNode in ag.frontier:
+      print str(searchNode)
+
+## Test basic search node generation
 def TestSearchNodeGen():
-   from PuzzleReader import ReadPuzzle
-   from WrigglerReader import FindWrigglers
-   from Move import Move
    puzz1 = ReadPuzzle('puzz1.pz')
    wrig = FindWrigglers(puzz1)
 
@@ -109,6 +168,8 @@ def TestSearchNodeGen():
 
    print ""
    print str(newSearchNode.state.puzzle)
+   print "===="
+   print str(newSearchNode)
 
 if __name__ == "__main__":
    from Puzzle import Puzzle
@@ -131,4 +192,12 @@ if __name__ == "__main__":
 
    print "TESTING SEARCH NODE GEN:"
    TestSearchNodeGen()
+   print ""
+   print "TESTING THE FRONTIER"
+   print ""
+   TestFrontierExpand()
+
+   print ""
+   print "TESTING FULL ITERATIONS"
+   TestBFTS_Iter()
    

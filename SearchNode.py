@@ -32,6 +32,16 @@ class SearchNode:
 
       return path
 
+   ## Print general info about the puzzle and move, etc
+   def __str__(self):
+      strRep = ''
+      if self.action is not None:
+         strRep += str(self.action) + "\n"
+      if self.state.puzzle is not None:
+         strRep += str(self.state.puzzle) + "\n"
+      strRep += str(self.pathCost)
+      return strRep
+
    ## @var state
    # The world state (puzzle) represented by this search node
 
@@ -63,7 +73,7 @@ class State:
    def DetermineAllLegalMoves(self):
       legalMoves = []
 
-      for wriggler in wrigglers:
+      for wriggler in self.wrigglers:
          wrigglerMoves = self.GetLegalMovesFromWriggler(wriggler)
 
          if len(wrigglerMoves) > 0:
@@ -105,7 +115,7 @@ class State:
          headMove = Move(wriggler.tail.idNumber, Move.HEAD, headMoveDest[0], headMoveDest[1])
 
          tailMoveDest = (wriggler.tail.pos[0] + move[0], wriggler.tail.pos[1] + move[1])
-         tailMove = Move(wriggler.tail.idNumber, Move.HEAD, tailMoveDest[0], tailMoveDest[1])
+         tailMove = Move(wriggler.tail.idNumber, Move.TAIL, tailMoveDest[0], tailMoveDest[1])
 
          movesFromWriggler.extend([headMove, tailMove])
 
