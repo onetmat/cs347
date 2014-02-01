@@ -117,6 +117,19 @@ class Puzzle:
          tileIndex += 1
       print stringRep
 
+   ## Same as PrintPuzzle but works with operator str
+   def __str__(self):
+      tileIndex = 1
+      stringRep = ''
+      for tile in self.puzzle:
+         stringRep += tile
+         if tileIndex % self.numCols == 0 and tileIndex != len(self.puzzle):
+            stringRep += '\n'
+         else:
+            stringRep +=  ' '
+         tileIndex += 1
+      return stringRep
+
    ## @var numCols
    # Total number of columns (width) of the puzzle
 

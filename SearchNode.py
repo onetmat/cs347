@@ -2,8 +2,9 @@
 # @author Mathew Anderson
 # @brief Implementation of searching node fromm
 # Artificial Intelligence: A Modern Approach by Russell and Norvig
+from Move import Move
 
-## THe SearchNode class tracks the state of the world
+## The SearchNode class tracks the state of the world
 # and all other variables that are useful to an agent.
 # This comes from p 78 of the aformentioned book
 # modified to suit this programming project
@@ -42,8 +43,6 @@ class SearchNode:
 
    ## @var pathCost
    # The cost of getting from the root to this node
-
-from Move import Move
 
 ## The state class contains relevant information to our puzzle assignment
 class State:
