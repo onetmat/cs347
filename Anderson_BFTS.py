@@ -14,19 +14,22 @@ puzzleFile = raw_input('Enter filename of puzzle: ')
 
 # attempt to construct the initial state
 initialPuzzle = ReadPuzzle(puzzleFile)
-# attempt to extract all wriggler info
-wrigglers = FindWrigglers(initialPuzzle)
 
-initialState = State(initialPuzzle, wrigglers)
-initialSearchNode = SearchNode(initialState, None, None, 0)
+if initialPuzzle is not None:
+   # attempt to extract all wriggler info
+   wrigglers = FindWrigglers(initialPuzzle)
 
-smith = Agent(initialSearchNode)
-startTime = time.clock()
-smith.BTFS_Solve()
-endTime = time.clock()
+   if len(wrigglers) > 0:
+      initialState = State(initialPuzzle, wrigglers)
+      initialSearchNode = SearchNode(initialState, None, None, 0)
 
-if smith.InGoalState():
-   solution = smith.ConstructSolutionString()
-   print solution
-   print str(endTime - startTime)
-   print str(smith.GetCurrentSearchNodeCost())
+      smith = Agent(initialSearchNode)
+      startTime = time.clock()
+      smith.BTFS_Solve()
+      endTime = time.clock()
+
+      if smith.InGoalState():
+         solution = smith.ConstructSolutionString()
+         print solution
+         print str(endTime - startTime)
+         print str(smith.GetCurrentSearchNodeCost())
