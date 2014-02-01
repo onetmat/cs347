@@ -4,20 +4,29 @@
 # for CS347SP14 Puzzle Project part I - BFTS
 
 from PuzzleReader import ReadPuzzle
-
 from WrigglerReader import FindWrigglers
+from Agent import Agent
+from SearchNode import State, SearchNode
+import time
 
 # prompt for file name
 puzzleFile = raw_input('Enter filename of puzzle: ')
 
 # attempt to construct the initial state
-initialState = ReadPuzzle(puzzleFile)
-
+initialPuzzle = ReadPuzzle(puzzleFile)
 # attempt to extract all wriggler info
-wrigglers = FindWrigglers(initialState)
+wrigglers = FindWrigglers(initialPuzzle)
 
-# Initial debug - just print the puzzle and the wrigglers
-initialState.PrintPuzzle()
+initialState = State(initialPuzzle, wrigglers)
+initialSearchNode = SearchNode(initialState, None, None, 0)
 
-for wrig in wrigglers:
-   print wrig
+smith = Agent(initialSearchNode)
+startTime = time.clock()
+smith.BTFS_Solve()
+endTime = time.clock()
+
+if smith.InGoalState():
+   solution = smith.ConstructSolutionString()
+   print solution
+   print str(endTime - startTime)
+   print str(smith.GetCurrentSearchNodeCost())

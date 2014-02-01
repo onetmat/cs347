@@ -38,9 +38,35 @@ class Agent:
       return goalState
 
    ## Perform a BFTS for goal node
-   # @param numIters Debug capping value
-   def BTFS_Solve(self, numIterations = None):
-      iters = 0
+   def BTFS_Solve(self):
+      iterCnt = 0
+      # while we're not in the goal state
+      # and we haven't interated for "too long"
+      while not self.InGoalState() and iterCnt < 1000000000:
+         # expand the frontier BTFS style
+         self.ExpandFrontier()
+         # and move the current node along
+         self.currentSearchNode = self.frontier[0]
+         self.frontier.remove(self.frontier[0]) # This will kill my time!
+
+   ## If we're in a goal state, construct the solution
+   # suitable to be submitted
+   def ConstructSolutionString(self):
+      solutionString = ''
+      if self.InGoalState():
+         goalPath = self.currentSearchNode.BackTrack()
+         for node in goalPath:
+            # root node will not have an action
+            if node.action is not None:
+               solutionString += str(node.action)
+
+         solutionString += str(self.currentSearchNode.state.puzzle)
+
+      return solutionString
+
+   ## Return the path cost of the current search node
+   def GetCurrentSearchNodeCost(self):
+      return self.currentSearchNode.pathCost
 
    ## Perform one BFTS iteration
    # DEBUGGING METHOD
