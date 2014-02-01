@@ -205,3 +205,8 @@ if __name__ == "__main__":
    if head.dirOfNext != 'U':
       print "FAILED"
    print "head is: " + head.dirOfNext
+
+# XXX - Wriggler needs tighter definition.
+# XXX - For proj two, see why moving was such a pain
+# XXX - Modify these classes to have getters/setters - too hard
+# to test with live data (at Puzzle and Agent level)

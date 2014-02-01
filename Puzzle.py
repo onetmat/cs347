@@ -12,7 +12,7 @@
 class Puzzle:
 
    ## Symbolic constant representing an empty square
-   EMPTY_SQAURE = 'e'
+   EMPTY_SQUARE = 'e'
 
    ## Ctor initializes all member vars to 0/empty
    def __init__(self):
@@ -20,6 +20,14 @@ class Puzzle:
       self.numRows = 0
       self.numWrigglers = 0
       self.puzzle = []
+
+   ## Clone an instance of a puzzle
+   # @param other The source of the clone
+   def CopyFrom(self, other):
+      self.numCols = other.numCols
+      self.numRows = other.numRows
+      self.numWrigglers = other.numWrigglers
+      self.puzzle = list(other.puzzle)
 
    ## Combine the row and col to get the index of the
    # specified tile in the list
@@ -34,6 +42,49 @@ class Puzzle:
    def GetTile(self, col, row):
       linearIndex = self.GetLinearIndex(col, row)
       return self.puzzle[linearIndex]
+
+   ## Given a wriggler within the puzzle,
+   # set all of it's segments to empty.
+   # @param wriggler Tiles to clear
+   def ClearWriggler(self, wriggler):
+      # set the head, tail, and segment locations to EMPTY_SQUARE
+      # XXX - tuple.unpack()?
+      self.ClearTile(wriggler.head.pos[0], wriggler.head.pos[1])
+      self.ClearTile(wriggler.tail.pos[0], wriggler.tail.pos[1])
+
+      for segment in wriggler.segments:
+         self.ClearTile(segment.pos[0], segment.pos[1])
+
+   ## Given a col, row, set a tile to the EMPTY_SQUARE char
+   # @param col The column of the tile to clear
+   # @param row The row of the tile to clear
+   def ClearTile(self, col, row):
+      linearIndex = self.GetLinearIndex(col, row)
+      self.puzzle[linearIndex] = Puzzle.EMPTY_SQUARE
+
+   ## Put the character representation of wriggler into the puzzle
+   # @param wriggler Wriggler to place
+   def PlaceWriggler(self, wriggler):
+      self.SetTile(wriggler.head.pos[0], \
+                   wriggler.head.pos[1], \
+                   wriggler.head.dirOfNext)
+      
+      self.SetTile(wriggler.tail.pos[0], \
+                   wriggler.tail.pos[1], \
+                   wriggler.tail.idNumber)
+
+      for segment in wriggler.segments:
+         self.SetTile(segment.pos[0], \
+                      segment.pos[1], \
+                      segment.dirOfNext)
+
+   ## Given a col, row, and desired char, update the puzzle
+   # @param col Column of tile to set
+   # @param row Row of tile to set
+   # @param char Desired character to set
+   def SetTile(self, col, row, char):
+      linearIndex = self.GetLinearIndex(col, row)
+      self.puzzle[linearIndex] = str(char)
 
    ## Given a col, row return if the space is "open"
    # @param col The desired column
@@ -95,3 +146,5 @@ if __name__ == "__main__":
       print "Failed IsOpen on wall"
    else:
       print "Passed IsOpen on wall (it is not open)"
+
+# XXX - num wrigglers can be dropped - it's only really interesting to the parser

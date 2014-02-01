@@ -10,21 +10,32 @@ from Move import Move
 # @param wriggler information about the wriggler being moved
 # @param move Details concerning the move
 # @param puzzle World state
-# @returns A new world state reflecting the move or None on error
+# @returns (New Wriggler, New World)
+# both of which reflecting the effect of the move
 def MoveWriggler(wriggler, move, puzzle):
-   newPuzzle = None
+   newPuzzle = Puzzle()
+   newWriggler = None
    try:
       # First, update the wriggler itself to get the correct characters
-      # the update method returns a new wriggler, so we can clear
-      # out the characters from the puzzle
-      # Then, update the puzzle with the new wriggler information
-      pass
+      # the update method returns a new wriggler
+      newWriggler = UpdateWriggler(wriggler, move)
+      # and now we can clear out the characters from the puzzle
+      # update the puzzle with the new wriggler information
+      newPuzzle.CopyFrom(puzzle)
+      newPuzzle.ClearWriggler(wriggler)
+      newPuzzle.PlaceWriggler(newWriggler)
 
-   except Exception as e:
-      print "Failed to MoveWriggler: " + e.message
-      newPuzzle = None
+      # XXX - This MoveWriggler method seems like it needs to
+      # be in the agent class somehow
+      # XXX - That's a lot of copying...
+   #except AttributeError as e:
+      #print "Failed to MoveWriggler: " + e.message
+      #newWriggler = None
+      #newPuzzle = None
+   except:
+      raise
 
-   return newPuzzle
+   return (newWriggler, newPuzzle)
 
 ## Given a wriggler and a move, update the positions
 # and all character representations of the segments
@@ -120,7 +131,19 @@ if __name__ == "__main__":
 
    # Move on to testing the MoveWriggler method
    # First test case, bad input
-   updatedWorldState = MoveWriggler(None, None, None)
-   if updatedWorldState is not None:
-      print "FAILED bad input test!"
-   pass
+   #updatedWorldState = MoveWriggler(None, None, None)
+   #if updatedWorldState != (None, None):
+   #   print "FAILED bad input test!"
+
+   # and a good test
+   puzz1.PrintPuzzle()
+   print ""
+   rightMove = Move(0, Move.HEAD, 1, 3)
+   nextState = MoveWriggler(wrigglers[0], rightMove, puzz1)
+   nextState[1].PrintPuzzle()
+
+   print ""
+   # move the tail up
+   tailUp = Move(0, Move.TAIL, 1, 0)
+   nextState = MoveWriggler(nextState[0], tailUp, nextState[1])
+   nextState[1].PrintPuzzle()
