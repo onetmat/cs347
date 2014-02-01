@@ -21,12 +21,34 @@ HEAD_CHARS = ['U', 'R', 'D', 'L']
 # of a Wriggler. Head and Tail have implicit representations
 class BodySegment:
 
-
    ## Ctor initializes all member vars to 0
    def __init__(self):
       self.dirOfNext = 0
       self.pos = (0, 0)
       self.myReps = SEGMENT_CHARS
+
+   ## Clone a BodySegment instance
+   # @param other Source of clone
+   def CopyFrom(self, other):
+      self.pos = tuple(other.pos)
+      self.dirOfNext = other.dirOfNext
+      # ignore the myreps
+
+
+   ## Given a (col, row) destination,
+   # update the character and position
+   def MoveTo(self, newPos):
+      # allow any excpetions to propagate up
+
+      # Calculate the delta (experimentally determined this works
+      # if (0,0) is the upper left +col, +row
+      colDelta = newPos[0] - self.pos[0]
+      rowDelta = newPos[1] - self.pos[1] 
+      # Determine the character
+      self.DetermineCharacterFromDelta((colDelta, rowDelta))
+
+      # store new pos
+      self.pos = newPos
 
    ## Given a movement delta, determine which character
    # representation is appropriate
@@ -38,15 +60,15 @@ class BodySegment:
    def DetermineCharacterFromDelta(self, delta):
       try:
          # validate input, only one non-zero entry in tuple
-         colIsChanging = delta[0] != 0
-         rowIsChanging = delta[1] != 0
+         colIsChanging = int(delta[0]) != 0
+         rowIsChanging = int(delta[1]) != 0
 
          # input normalized to boolean, XOR is now boolA != boolB
          if colIsChanging != rowIsChanging:
 
             if colIsChanging:
                # moving left or right
-               movingLeft = delta[0] == -1
+               movingLeft = int(delta[0]) == -1
 
                if movingLeft:
                   self.dirOfNext = self.myReps[RIGHT]
@@ -56,7 +78,7 @@ class BodySegment:
                   self.dirOfNext = self.myReps[LEFT]
             else:
                # moving up or down
-               movingUp = delta[1] == -1
+               movingUp = int(delta[1]) == -1
 
                if movingUp:
                   # next segment will be down
@@ -66,11 +88,9 @@ class BodySegment:
                   # next segment will be up
                   self.dirOfNext = self.myReps[UP]
          else:
-            raise Exception("Invalid delta: " + delta)
-
-      except Exception as e:
-         raise Exception ("Failed to determine representation "\
-            + "from a given delta: " + e.message)
+            raise Exception("Invalid delta: " + str(delta))
+      except:
+         raise
 
    ## @var dirOfNext
    # Symbolic representation of the direction of the next segment
@@ -95,11 +115,23 @@ class Head(BodySegment):
 ## The TAIL has a number identifying the wriggler
 # and a position, but otherwise nothing special
 # tail never changes it's character
-class Tail:
+class Tail(BodySegment):
    ## Ctor initializes everything to 0
    def __init__(self):
+      BodySegment.__init__(self)
       self.idNumber = 0
-      self.pos = (0, 0)
+
+   ## Clone a Tail object
+   # @param other The source of the clone
+   def CopyFrom(self, other):
+      BodySegment.CopyFrom(self, other)
+      self.idNumber = other.idNumber
+      
+
+   ## Tail's character never changes. It's classy like that.
+   def DetermineCharacterFromDelta(self, delta):
+      return self.idNumber
+
 
 ## The Wriggler class stores the locations and
 # appropriate attributes for each segment of a wriggler
@@ -115,6 +147,17 @@ class Wriggler:
 
       self.segments = []
 
+   ## Copy an existing Wriggler
+   # @param other A other wriggler
+   def CopyFrom(self, other):
+      self.head.CopyFrom(other.head)
+      self.tail.CopyFrom(other.tail)
+      for otherSegment in other.segments:
+         newSegment = BodySegment()
+         newSegment.CopyFrom(otherSegment)
+         self.segments.append(newSegment)
+      
+
    ## ToString method that prints something useful
    # beyond the object hash.
    def __str__(self):
@@ -125,6 +168,7 @@ class Wriggler:
       for segment in self.segments:
          strRep += "\nSegment number " + str(segNum) + " char, location: " + segment.dirOfNext \
             + ", " + str(segment.pos)
+         segNum += 1
 
       strRep += "\n"
       return strRep
