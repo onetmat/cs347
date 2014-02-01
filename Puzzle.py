@@ -91,7 +91,7 @@ class Puzzle:
    # @param row The desired row
    def IsOpen(self, col, row):
       linearIndex = self.GetLinearIndex(col, row)
-      openTile = self.puzzle[linearIndex] == Puzzle.EMPTY_SQAURE
+      openTile = self.puzzle[linearIndex] == Puzzle.EMPTY_SQUARE
       return openTile
 
    ## Print the current world state consistent with
