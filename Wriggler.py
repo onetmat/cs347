@@ -35,28 +35,30 @@ class BodySegment:
       # ignore the myreps
 
 
-   ## Given a (col, row) destination,
-   # update the character and position
+   ## Set new position of segment
+   # @param newPos Position of segment
    def MoveTo(self, newPos):
-      # allow any excpetions to propagate up
-
-      # Calculate the delta (experimentally determined this works
-      # if (0,0) is the upper left +col, +row
-      colDelta = newPos[0] - self.pos[0]
-      rowDelta = newPos[1] - self.pos[1] 
-      # Determine the character
-      self.DetermineCharacterFromDelta((colDelta, rowDelta))
-
-      # store new pos
       self.pos = newPos
 
-   ## Given a movement delta, determine which character
+   ## Updates the character that represents this character
+   # @param other The segment relative to this one
+   def UpdateSegmentCharacter(self, other):
+      segmentDelta = self.DetermineSegmentDelta(other)
+      self.DetermineCharacterFromDelta(segmentDelta)
+
+   ## Determine the delta in position from another segment
+   # @param other The other BodySegment
+   # @return A tuple containing the delta
+   def DetermineSegmentDelta(self, other):
+      # Determined experimentally that this is proper
+      colDelta = self.pos[0] - other.pos[0]
+      rowDelta = self.pos[1] - other.pos[1]
+      return (colDelta, rowDelta)
+
+   ## Given a position delta, determine which character
    # representation is appropriate
    # @param delta A (col, row) type that represents a recent move
    # @note This class changes the dirOfNext variable of this class
-   # Special case because HEAD pieces have special characters
-   # Method raises a general exception if invalid delta info
-   # is passed
    def DetermineCharacterFromDelta(self, delta):
       try:
          # validate input, only one non-zero entry in tuple

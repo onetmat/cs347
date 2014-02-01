@@ -97,6 +97,21 @@ def UpdateWriggler(wriggler, move):
             newWriggler.tail.MoveTo(nextDest)
          elif move.pieceMoved == Move.TAIL:
             newWriggler.head.MoveTo(nextDest)
+
+         # Update the head and body segment characters
+         # XXX - Thought I had a better way to do this...?
+         numSegs = len(newWriggler.segments)
+         if numSegs > 0:
+            newWriggler.head.UpdateSegmentCharacter(newWriggler.segments[0])
+
+            # Update segments relative to each other
+            for segIndex in xrange(0, numSegs-1):
+               newWriggler.segments[segIndex].UpdateSegmentCharacter( \
+                  newWriggler.segments[segIndex+1])
+
+            newWriggler.segments[-1].UpdateSegmentCharacter(newWriggler.tail)
+         else:
+            newWriggler.head.UpdateSegmentCharacter(newWriggler.tail)
    except:
       raise
 
@@ -146,4 +161,10 @@ if __name__ == "__main__":
    # move the tail up
    tailUp = Move(0, Move.TAIL, 1, 0)
    nextState = MoveWriggler(nextState[0], tailUp, nextState[1])
+   nextState[1].PrintPuzzle()
+
+   # Then move the tail right
+   print ""
+   tailRight = Move(0, Move.TAIL, 2, 0)
+   nextState = MoveWriggler(nextState[0], tailRight, nextState[1])
    nextState[1].PrintPuzzle()
