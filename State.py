@@ -39,8 +39,7 @@ class State:
       # and extend the legalMoves list
       for wriggler in self.wrigglers:
          wrigglerMoves = self.WrigglerActions(wriggler)
-
-      legalMoves.extend(wrigglerMoves)
+         legalMoves.extend(wrigglerMoves)
 
       return legalMoves
 

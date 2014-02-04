@@ -16,8 +16,8 @@ class Agent:
    ## ctor initializes all to empty
    # @param initialSearchNode The starting world state
    def __init__(self, initialSearchNode):
-      self.currentSearchNode = initialSearchNode
-      self.frontier = []
+      self.currentSearchNode = None
+      self.frontier = [initialSearchNode]
 
    ## Perform a BFTS for goal node
    def BTFS_Solve(self):
@@ -27,11 +27,14 @@ class Agent:
       # and we haven't interated for "too long"
       while not foundGoal and iterCnt < 1000000000:
          # expand the frontier BTFS style
-         self.ExpandFrontier()
-         # and move the current node along
-         self.currentSearchNode = self.frontier[0]
-         self.frontier.remove(self.frontier[0]) # This will kill my time!
-         foundGoal = self.currentSearchNode.ContainsGoalState()
+         if len(self.frontier) != 0:
+            self.currentSearchNode = self.frontier[0]
+            self.frontier.remove(self.frontier[0]) # This will kill my time!
+            foundGoal = self.currentSearchNode.ContainsGoalState()
+
+            self.ExpandFrontier()
+         else:
+            break
 
       return foundGoal
 
