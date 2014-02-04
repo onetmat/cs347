@@ -37,6 +37,11 @@ class SearchNode:
 
       return path
 
+   ## For the puzzle project, a SearchNode contains a goal state if
+   # the blue wriggler's head or tail is in the lower right hand corner.
+   def ContainsGoalState(self):
+      return self.state.BlueWrigglerInLowerRightCorner()
+
    ## Print general info about the puzzle and move, etc
    def __str__(self):
       strRep = ''

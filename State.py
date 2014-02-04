@@ -29,7 +29,7 @@ class State:
    # This constitutes a check for goal state.
    def BlueWrigglerInLowerRightCorner(self):
       lowerRightCorner = self.puzzle.GetLowerRightCornerPosition()
-      return self.wrigglers[indexOfBlue].HeadOrTailAtPos(lowerRightCorner)
+      return self.wrigglers[self.indexOfBlue].HeadOrTailAtPos(lowerRightCorner)
 
    ## Generate all legal moves from all wrigglers in the state
    def Actions(self):

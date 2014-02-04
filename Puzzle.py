@@ -121,7 +121,7 @@ class Puzzle:
    ## Return a (col, row) that defines the "lower right"
    # corner of the puzzle.
    def GetLowerRightCornerPosition(self):
-      return (self.numCols - 1, self.numRows)
+      return (self.numCols - 1, self.numRows - 1)
 
    ## Print the current world state consistent with
    # the project specifications.

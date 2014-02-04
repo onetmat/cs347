@@ -19,37 +19,27 @@ class Agent:
       self.currentSearchNode = initialSearchNode
       self.frontier = []
 
-   ## Determine if the current state is the goal state
-   def InGoalState(self):
-      # for this puzzle, the goal has been reached when
-      # the current state has a wriggler with tail number 0
-      # whose head or tail positions coincide with the bottom
-      # left hand corner of the maze
-      botRightCol = self.currentSearchNode.state.puzzle.numCols - 1
-      botRightRow = self.currentSearchNode.state.puzzle.numRows - 1
-      botRightTuple = (botRightCol, botRightRow)
-
-      blueWriggler = self.currentSearchNode.state.wrigglers[self.currentSearchNode.state.indexOfBlue]
-
-      return blueWriggler.HeadOrTailAtPos(botRightTuple)
-
    ## Perform a BFTS for goal node
    def BTFS_Solve(self):
       iterCnt = 0
+      foundGoal = False
       # while we're not in the goal state
       # and we haven't interated for "too long"
-      while not self.InGoalState() and iterCnt < 1000000000:
+      while not foundGoal and iterCnt < 1000000000:
          # expand the frontier BTFS style
          self.ExpandFrontier()
          # and move the current node along
          self.currentSearchNode = self.frontier[0]
          self.frontier.remove(self.frontier[0]) # This will kill my time!
+         foundGoal = self.currentSearchNode.ContainsGoalState()
+
+      return foundGoal
 
    ## If we're in a goal state, construct the solution
    # suitable to be submitted
    def ConstructSolutionString(self):
       solutionString = ''
-      if self.InGoalState():
+      if self.currentSearchNode.ContainsGoalState():
          goalPath = self.currentSearchNode.BackTrack()
          for node in goalPath:
             # root node will not have an action
@@ -68,7 +58,7 @@ class Agent:
    # DEBUGGING METHOD
    def BTFSIteration(self):
       # check if the current node is the goal
-      if not self.InGoalState():
+      if not self.self.currentSearchNode.ContainsGoalState():
          # if not, expand the frontier
          self.ExpandFrontier()
          # and set the current node to the top of the frontier
@@ -209,7 +199,7 @@ if __name__ == "__main__":
    state = State(puzz, [goalWriggler])
    agent = Agent(SearchNode(state, None, None, 0))
 
-   if not agent.InGoalState():
+   if not agent.currentSearchNode.ContainsGoalState():
       print "FAILED to detect goal state"
 
    print "TESTING SEARCH NODE GEN:"

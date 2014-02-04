@@ -25,10 +25,10 @@ if initialPuzzle is not None:
 
       smith = Agent(initialSearchNode)
       startTime = time.clock()
-      smith.BTFS_Solve()
+      foundGoal = smith.BTFS_Solve()
       endTime = time.clock()
 
-      if smith.InGoalState():
+      if foundGoal:
          solution = smith.ConstructSolutionString()
          print solution
          print str(endTime - startTime)
