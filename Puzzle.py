@@ -94,6 +94,13 @@ class Puzzle:
       openTile = self.puzzle[linearIndex] == Puzzle.EMPTY_SQUARE
       return openTile
 
+   ## Given a (col, row) position return if the space is "open"
+   # @param position (col, row) position to check
+   def IsOpen(self, position):
+      linearIndex = self.GetLinearIndex(position[0], position[1])
+      openTile = self.puzzle[linearIndex] == Puzzle.EMPTY_SQUARE
+      return openTile
+
    ## Determine if a position is within the bounds of the puzzle
    # @param col The desired column
    # @param row The desired row
@@ -102,6 +109,19 @@ class Puzzle:
       colInBounds = col > -1 and col < self.numCols
       rowInBounds = row > -1 and row < self.numRows
       return colInBounds and rowInBounds
+
+   ## Determine if a position is within the bounds of the puzzle
+   # @param position (col, row) to check
+   # @return True if position is within bounds, false otherwise
+   def PositionInBounds(self, position):
+      colInBounds = position[0] > -1 and position[0] < self.numCols
+      rowInBounds = position[1] > -1 and position[1] < self.numRows
+      return colInBounds and rowInBounds
+
+   ## Return a (col, row) that defines the "lower right"
+   # corner of the puzzle.
+   def GetLowerRightCornerPosition(self):
+      return (self.numCols - 1, self.numRows)
 
    ## Print the current world state consistent with
    # the project specifications.

@@ -84,7 +84,7 @@ class Agent:
    # XXX- BFTS specific
    def ExpandFrontier(self):
       # Query the state for all valid moves for this state
-      allMoves = self.currentSearchNode.state.DetermineAllLegalMoves()
+      allMoves = self.currentSearchNode.Actions()
 
       # for each move generate a new search node
       for move in allMoves:

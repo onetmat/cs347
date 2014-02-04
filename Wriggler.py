@@ -167,8 +167,20 @@ class Wriggler:
       tailAtPos = pos == self.tail.pos
 
       return tailAtPos or headAtPos
-      
 
+   ## Return the integer representing the tail number of this wriggler
+   # (unique ID).
+   def GetTailNumber(self):
+      return self.tail.idNumber
+
+   ## Return the (col, row) position of the head of the wriggler
+   def GetHeadPosition(self):
+      return self.head.pos
+
+   ## Return the (col, row) position of the tail of the wriggler
+   def GetTailPosition(self):
+      return self.tail.pos
+      
    ## ToString method that prints something useful
    # beyond the object hash.
    def __str__(self):
