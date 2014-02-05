@@ -19,20 +19,72 @@ class Agent:
       self.currentSearchNode = None
       self.frontier = [initialSearchNode]
 
+   ## Perform a ID-DTFS search for the goal node
+   def IterativeDepthDTFS_Solve(self):
+      # Start with a max depth of 1
+      currMax = 1
+
+      rootNode = self.frontier[0]
+
+      goalNode = self.RecursiveDFTS_Eval(rootNode, currMax)
+
+      # while this max depth doesn't yield a goal
+      while goalNode is None:
+         # increment the max
+         currMax += 1
+         print "Trying with a max of: " + str(currMax)
+         # and try again
+         goalNode = self.RecursiveDFTS_Eval(rootNode, currMax)
+
+      # ID-DFTS is complete because all path costs
+      # are non-negative and the depth factor is finite
+      return goalNode
+
+   ## Given a search node and depth beyond the node to search,
+   # perform a depth-limited evaluation of this node
+   # @param searchNode The starting search node
+   # @param maxDepth The depth from this node we are allowed to go
+   def RecursiveDFTS_Eval(self, searchNode, maxDepth):
+
+      # check if this is a goal node,
+      # if so, we're done
+      if searchNode.ContainsGoalState():
+         return searchNode
+
+      # otherwise, determine if this is as deep as we're checking
+      if maxDepth == 0:
+         # and return no goal found
+         return None
+
+      # otherwise, get a list of complete moves
+      nextMoves = searchNode.Actions()
+
+      # and for each move
+      for nextMove in nextMoves:
+         # generate a new node
+         nextNode = self.GenerateSearchNodeFromMove(searchNode, nextMove)
+         # and recursively evaluate that node, but allowing one less depth
+         goalNode = self.RecursiveDFTS_Eval(nextNode, maxDepth - 1)
+
+         #if we find a goal anywhere
+         if goalNode is not None:
+            # then break out
+            return goalNode
+
    ## Perform a BFTS for goal node
-   def BTFS_Solve(self):
+   def BFTS_Solve(self):
       iterCnt = 0
       foundGoal = False
       # while we're not in the goal state
       # and we haven't interated for "too long"
       while not foundGoal and iterCnt < 1000000000:
-         # expand the frontier BTFS style
+         # expand the frontier BFTS style
          if len(self.frontier) != 0:
             self.currentSearchNode = self.frontier[0]
             self.frontier.remove(self.frontier[0]) # This will kill my time!
             foundGoal = self.currentSearchNode.ContainsGoalState()
 
-            self.ExpandFrontier()
+            self.BFTS_ExpandFrontier()
          else:
             break
 
@@ -40,16 +92,16 @@ class Agent:
 
    ## If we're in a goal state, construct the solution
    # suitable to be submitted
-   def ConstructSolutionString(self):
+   def ConstructSolutionString(self, searchNode):
       solutionString = ''
-      if self.currentSearchNode.ContainsGoalState():
-         goalPath = self.currentSearchNode.BackTrack()
+      if searchNode.ContainsGoalState():
+         goalPath = searchNode.BackTrack()
          for node in goalPath:
             # root node will not have an action
             if node.action is not None:
                solutionString += str(node.action)
 
-         solutionString += str(self.currentSearchNode.state.puzzle)
+         solutionString += str(searchNode.state.puzzle)
 
       return solutionString
 
@@ -59,11 +111,11 @@ class Agent:
 
    ## Perform one BFTS iteration
    # DEBUGGING METHOD
-   def BTFSIteration(self):
+   def BFTSIteration(self):
       # check if the current node is the goal
       if not self.self.currentSearchNode.ContainsGoalState():
          # if not, expand the frontier
-         self.ExpandFrontier()
+         self.BFTS_ExpandFrontier()
          # and set the current node to the top of the frontier
          # XXX Python doesn't have a front method, append + pop
          # will yield last appended value...
@@ -74,28 +126,27 @@ class Agent:
       
 
    ## Create all possible child states from the current state
-   # XXX- BFTS specific
-   def ExpandFrontier(self):
+   def BFTS_ExpandFrontier(self):
       # Query the state for all valid moves for this state
       allMoves = self.currentSearchNode.Actions()
 
       # for each move generate a new search node
       for move in allMoves:
-         newSearchNode = self.GenerateSearchNodeFromMove(move)
+         newSearchNode = self.GenerateSearchNodeFromMove(self.currentSearchNode, move)
          # and add it to the frontier
          self.frontier.append(newSearchNode)
 
    ## Generate a new search node given the current state
    # and a valid move
    # @param move The move to apply
-   def GenerateSearchNodeFromMove(self, move):
+   def GenerateSearchNodeFromMove(self, searchNode, move):
       # First, determine which wriggler will move
       # and which are not important
-      wrigglerDivide = self.SeparateMoveWrigglerFromOthers(move)
+      wrigglerDivide = self.SeparateMoveWrigglerFromOthers(searchNode, move)
       # Next, create a new puzzle and wriggler based on the move
       updatedStateInternals = MoveWriggler(wrigglerDivide[0], \
                                           move, \
-                                          self.currentSearchNode.state.puzzle)   
+                                          searchNode.state.puzzle)   
 
       # put the updated wriggler back with all others
       allWrigglers = [updatedStateInternals[0]]
@@ -105,9 +156,9 @@ class Agent:
       # updateStateInternals = (new wriggler, new world)
       newState = State(updatedStateInternals[1], allWrigglers)
       newSearchNode = SearchNode(newState, \
-                                 self.currentSearchNode, \
+                                 searchNode, \
                                  move, \
-                                 self.currentSearchNode.pathCost+1) # XXX - Will need to change this...
+                                 searchNode.pathCost+1) # XXX - Will need to change this...
 
       return newSearchNode
 
@@ -115,10 +166,10 @@ class Agent:
    # affected by a specific move and the second entry is a list
    # of all other wrigglers
    # @param move The move to apply
-   def SeparateMoveWrigglerFromOthers(self, move):
+   def SeparateMoveWrigglerFromOthers(self, searchNode, move):
       otherWrigglers = []
       moveWriggler = None
-      for wriggler in self.currentSearchNode.state.wrigglers:
+      for wriggler in searchNode.state.wrigglers:
          if wriggler.tail.idNumber != move.tailNumber:
             otherWrigglers.append(wriggler)
          else:
@@ -146,7 +197,7 @@ def TestBFTS_Iter():
    print str(ag.currentSearchNode)
    for iter in xrange(1, 10000):
       print "ITER " + str(iter)
-      ag.BTFSIteration()
+      ag.BFTSIteration()
 
       print str(ag.currentSearchNode)
 
@@ -158,7 +209,7 @@ def TestFrontierExpand():
    initialState = State(puzz1, wrig)
    initialSearchNode = SearchNode(initialState, None, None, 0)
    ag = Agent(initialSearchNode)
-   ag.ExpandFrontier()
+   ag.BFTS_ExpandFrontier()
 
    for searchNode in ag.frontier:
       print str(searchNode)
@@ -172,7 +223,7 @@ def TestSearchNodeGen():
    initialSearchNode = SearchNode(initialState, None, None, 0)
    ag = Agent(initialSearchNode)
    mv = Move(0, Move.HEAD, 1, 3)
-   newSearchNode = ag.GenerateSearchNodeFromMove(mv)
+   newSearchNode = ag.GenerateSearchNodeFromMove(initialSearchNode, mv)
 
    path = newSearchNode.BackTrack()
 

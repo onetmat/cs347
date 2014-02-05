@@ -1,7 +1,7 @@
 ## @file Anderson_BTFS.py
 # @author Mathew Anderson
 # @brief Implementation of main method
-# for CS347SP14 Puzzle Project part I - BFTS
+# for CS347SP14 Puzzle Project part I - ID-DFTS
 
 from PuzzleReader import ReadPuzzle
 from WrigglerReader import FindWrigglers
@@ -25,11 +25,11 @@ if initialPuzzle is not None:
 
       smith = Agent(initialSearchNode)
       startTime = time.clock()
-      foundGoal = smith.BFTS_Solve()
+      foundGoal = smith.IterativeDepthDTFS_Solve()
       endTime = time.clock()
 
-      if foundGoal:
-         solution = smith.ConstructSolutionString(smith.currentSearchNode)
+      if foundGoal is not None:
+         solution = smith.ConstructSolutionString(foundGoal)
          print solution
          print str(endTime - startTime)
-         print str(smith.GetCurrentSearchNodeCost())
+         print str(foundGoal.pathCost)
