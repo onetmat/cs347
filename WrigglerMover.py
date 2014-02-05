@@ -25,13 +25,6 @@ def MoveWriggler(wriggler, move, puzzle):
       newPuzzle.ClearWriggler(wriggler)
       newPuzzle.PlaceWriggler(newWriggler)
 
-      # XXX - This MoveWriggler method seems like it needs to
-      # be in the agent class somehow
-      # XXX - That's a lot of copying...
-   #except AttributeError as e:
-      #print "Failed to MoveWriggler: " + e.message
-      #newWriggler = None
-      #newPuzzle = None
    except:
       raise
 
@@ -56,47 +49,15 @@ def UpdateWriggler(wriggler, move):
 
          nextDest = (move.destColumn, move.destRow)
 
-         # use python's ability to enumerate a list
-         # to update all segments
-         enumeratedSegments = None
-
          #if the head is being moved
          if move.pieceMoved == Move.HEAD:
-            # then we'll forward iterate over the segments
-            enumeratedSegments = list(enumerate(wriggler.segments))
-
-            # move the head first
-            newWriggler.head.MoveTo(nextDest)
-            # and update next dest
-            nextDest = wriggler.head.pos
+            newWriggler.MoveWrigglerByHead(nextDest)
 
          elif move.pieceMoved == Move.TAIL:
-            # but if the tails was moved, reverse iterate
-            enumeratedSegments = reversed(list(enumerate(wriggler.segments)))
+            newWriggler.MoveWrigglerByTail(nextDest)
 
-            # and move the tail
-            newWriggler.tail.MoveTo(nextDest)
-            # and update next dest tuple
-            nextDest = wriggler.tail.pos
          else:
             raise Exception ("Invalid pieceMoved set in a move!")
-
-         # foreach segment
-         for segment in enumeratedSegments:
-            # segment is a tuple (list index, wriggler's segment info)
-            segmentIndex = segment[0]
-            # move the segment at segment index to 
-            # the nextDest
-            newWriggler.segments[segmentIndex].MoveTo(nextDest)
-            # update next dest
-            nextDest = wriggler.segments[segmentIndex].pos
-
-         # XXX - Found myself in Atari here... need to
-         # refactor this method for part II.
-         if move.pieceMoved == Move.HEAD:
-            newWriggler.tail.MoveTo(nextDest)
-         elif move.pieceMoved == Move.TAIL:
-            newWriggler.head.MoveTo(nextDest)
 
          # Update the head and body segment characters
          # XXX - Thought I had a better way to do this...?

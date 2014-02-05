@@ -180,6 +180,37 @@ class Wriggler:
    ## Return the (col, row) position of the tail of the wriggler
    def GetTailPosition(self):
       return self.tail.pos
+
+   ## Move a wriggler from the head
+   # @param newHeadPos The new position of the head
+   def MoveWrigglerByHead(self, newHeadPos):
+      # update the head and store it's old pos
+      nextPos = self.head.pos
+      self.head.pos = newHeadPos
+      # now loop through and update all body segments
+      for segment in self.segments:
+         oldPos = segment.pos
+         segment.MoveTo(nextPos)
+         nextPos = oldPos
+
+      # now move the tail
+      self.tail.pos = nextPos
+
+   ## Move a wriggler from the tail
+   # @param newTailPos The new position of the tail
+   def MoveWrigglerByTail(self, newTailPos):
+      # update the tail and store it's old pos
+      nextPos = self.tail.pos
+      self.tail.pos = newTailPos
+      # now loop through and update all body segments
+      for segment in reversed(self.segments):
+         oldPos = segment.pos
+         segment.MoveTo(nextPos)
+         nextPos = oldPos
+
+      # now move the head
+      self.head.pos = nextPos
+      
       
    ## ToString method that prints something useful
    # beyond the object hash.
