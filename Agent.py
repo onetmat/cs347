@@ -32,7 +32,6 @@ class Agent:
       while goalNode is None:
          # increment the max
          currMax += 1
-         print "Trying with a max of: " + str(currMax)
          # and try again
          goalNode = self.RecursiveDFTS_Eval(rootNode, currMax)
 
