@@ -33,4 +33,4 @@ if initialPuzzle is not None:
          solnFile = open(puzzleFile + '.sln', 'w')
          solnFile.write(solution + '\n')
          solnFile.write(str(endTime - startTime) + '\n')
-         solnFile.write(str(foundGoal.pathCost))
+         solnFile.write(str(foundGoal.pathCost) + '\n')
