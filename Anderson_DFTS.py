@@ -30,6 +30,7 @@ if initialPuzzle is not None:
 
       if foundGoal is not None:
          solution = smith.ConstructSolutionString(foundGoal)
-         print solution
-         print str(endTime - startTime)
-         print str(foundGoal.pathCost)
+         solnFile = open(puzzleFile + '.sln', 'w')
+         solnFile.write(solution + '\n')
+         solnFile.write(str(endTime - startTime) + '\n')
+         solnFile.write(str(foundGoal.pathCost))
