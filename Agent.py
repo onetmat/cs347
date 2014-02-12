@@ -9,6 +9,9 @@ from PuzzleReader import ReadPuzzle
 from WrigglerReader import FindWrigglers
 from Move import Move
 
+# Used to maintain a strict weak ordering on 
+import heapq
+
 ## This Agent class will form the foundation
 # of all Agent classes, but right now is specialized to BFTS
 class Agent:
@@ -18,6 +21,15 @@ class Agent:
    def __init__(self, initialSearchNode):
       self.currentSearchNode = None
       self.frontier = [initialSearchNode]
+
+   ## Perform a greedy, best-first search for the goal node
+   def GreedyBestFirstGraphSearch(self):
+      # frontier contains the initial search node,
+      # initialize an explored set as a hash table
+      self.explored = dict()
+
+      # remove the initial searchnode
+      self.currentSearchNode = self.frontier.pop()
 
    ## Perform a ID-DTFS search for the goal node
    def IterativeDepthDTFS_Solve(self):
@@ -100,7 +112,7 @@ class Agent:
             if node.action is not None:
                solutionString += str(node.action)
 
-         solutionString += str(searchNode.state.puzzle)
+         solutionString += str(searchNode.state.ConstructSolution())
 
       return solutionString
 

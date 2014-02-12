@@ -5,6 +5,8 @@
 # There is no difference between a Puzzle and a world state, and therefore
 # a Puzzle may be queried for information concerning movement.
 
+import hashlib
+
 ## The puzzle class allows queries at a given (col, row),
 # is aware of how many wrigglers are on the board, and can
 # be considered the world state.
@@ -20,6 +22,7 @@ class Puzzle:
       self.numRows = 0
       self.numWrigglers = 0
       self.puzzle = []
+      self.hashValue = hashlib.new('sha1')
 
    ## Clone an instance of a puzzle
    # @param other The source of the clone
@@ -28,6 +31,30 @@ class Puzzle:
       self.numRows = other.numRows
       self.numWrigglers = other.numWrigglers
       self.puzzle = list(other.puzzle)
+
+   ## Add a line to the puzzle, incorporating its
+   # contents into the hash value.
+   # @param tiles The next puzzle tiles to add
+   def AddLine(self, tiles):
+      self.puzzle += tiles
+      # convert the line into a string
+      tileStr = ''.join(tiles)
+      # add hash value
+      self.hashValue.update(tileStr)
+
+   ## Re-generate the hash associated with this puzzle object
+   # used to incorporate a copy or move.
+   def ReHashPuzzle(self):
+      self.hashValue = hashlib.new('sha1')
+      # change the puzzle tiles into one string
+      # and hash it
+      tileStr = ''.join(self.puzzle)
+      self.hashValue.update(tileStr)
+
+   ## Retrieve the stored hash value representing
+   # this puzzle
+   def GetPuzzleHash(self):
+      return self.hashValue
 
    ## Combine the row and col to get the index of the
    # specified tile in the list
@@ -161,6 +188,9 @@ class Puzzle:
 
    ## @var puzzle
    # Linear representation of the puzzle
+
+   ## @var hashValue
+   # A sha-1 hash used to identify this puzzle.
 
 if __name__ == "__main__":
    puz = Puzzle()

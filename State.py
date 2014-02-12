@@ -24,6 +24,9 @@ class State:
          if wriggler.tail.idNumber == 0:
             self.indexOfBlue = index
 
+      # Calculate the heuristic cost in play
+      self.CalculateHeuristic()
+
    ## Determine if the head or tail of the blue wriggler
    # is located in the lower right corner of the puzzle.
    # This constitutes a check for goal state.
@@ -73,6 +76,43 @@ class State:
       # return the list of legal actions
       return wrigglerActions
 
+   ## Return the stored heuristic cost of this state.
+   def GetHeuristicCost(self):
+      return self.heuristic
+
+   ## Calculate the heuristic cost for this State.
+   # @param which Variable for expansion later
+   #    will ultimately allow heuristic selection
+   def CalculateHeuristic(self, which = 0):
+      if which == 0:
+         # Get goal position
+         lowerRightCorner = self.puzzle.GetLowerRightCornerPosition()
+         # get head position of blue wriggler
+         headPos = self.wrigglers[self.indexOfBlue].GetHeadPosition()
+         # get tail position of blue wriggler
+         tailPos = self.wrigglers[self.indexOfBlue].GetTailPosition()
+         # determine which Euclidean is least
+         headEuclidean = self.GetEuclideanHeuristic(headPos, lowerRightCorner)
+         tailEuclidean = self.GetEuclideanHeuristic(tailPos, lowerRightCorner)
+         # store heuristic cost
+         self.heuristic = min(headEuclidean, tailEuclidean)
+
+   ## Return the 2D Euclidean distance between two nodes.
+   # @param start (col, row) of start tile
+   # @param end (col, row) of end tile
+   # Avoids taking square root for speed
+   def GetEuclideanHeuristic(self, start, end):
+      colsSquared = (start[0] + end[0]) ** 2
+      rowsSquared = (start[1] + end[1]) ** 2
+
+      return colsSquared + rowsSquared
+
+   ## Have each wriggler update it's character representation
+   # and put that in the puzzle string itself.
+   # Return the string representation of this action
+   def ConstructSolution(self):
+      return str(self.puzzle)
+
    ## @var puzzle
    # An object with rows and columns that defines an open
    # and closed state of each (col, row) tuple. This object
@@ -84,6 +124,11 @@ class State:
    # A Wriggler must have a head and tail and must allow
    # the state to present a (col, row) and determine if
    # the head or tail resides at that "position"
+
+   ## @var heuristicCost
+   # Value of the custom heuristic in play, evaluated on this state
+   # In this case, the heuristic is min( || (head, goal) ||, || (tail, goal) ||)
+   # where || ... || implies Euclidean distance
 
 if __name__ == "__main__":
    # test legal move determination

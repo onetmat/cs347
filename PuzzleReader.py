@@ -51,7 +51,8 @@ def ReadPuzzle(filename):
          # split the line into tile tokens
          tiles = nextLine.split()
          # and append the tiles onto the initial puzzle
-         initialPuzzle.puzzle += tiles
+         initialPuzzle.AddLine(tiles)
+         #initialPuzzle.puzzle += tiles
 
       else:
          print "FAILED to parse puzzle in " + filename

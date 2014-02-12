@@ -52,6 +52,16 @@ class SearchNode:
       strRep += str(self.pathCost)
       return strRep
 
+   ## Determine a strict, weak ordering between this and another
+   # SearchNode instance. Used to represent a "cost" function
+   def __le__(self, other):
+      print "SearchNode being compared!"
+      return self.state.GetHeuristicCost() < other.state.GetHeuristicCost()
+
+   def __eq__(self, other):
+      print "SearchNode equality!"
+      return self.state.GetHeuristicCost() == other.state.GetHeuristicCost()
+
    ## @var state
    # The world state (puzzle) represented by this search node
 

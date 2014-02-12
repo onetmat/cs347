@@ -24,6 +24,8 @@ def MoveWriggler(wriggler, move, puzzle):
       newPuzzle.CopyFrom(puzzle)
       newPuzzle.ClearWriggler(wriggler)
       newPuzzle.PlaceWriggler(newWriggler)
+      # update the hash value
+      newPuzzle.ReHashPuzzle()
 
    except:
       raise
@@ -65,7 +67,7 @@ def UpdateWriggler(wriggler, move):
          if numSegs > 0:
             newWriggler.head.UpdateSegmentCharacter(newWriggler.segments[0])
 
-            # Update segments relative to each other
+            ## Update segments relative to each other
             for segIndex in xrange(0, numSegs-1):
                newWriggler.segments[segIndex].UpdateSegmentCharacter( \
                   newWriggler.segments[segIndex+1])
