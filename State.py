@@ -34,6 +34,10 @@ class State:
       lowerRightCorner = self.puzzle.GetLowerRightCornerPosition()
       return self.wrigglers[self.indexOfBlue].HeadOrTailAtPos(lowerRightCorner)
 
+   ## Retrieve the hash value stored by the puzzle
+   def GetPuzzleHash(self):
+      return self.puzzle.GetPuzzleHash()
+
    ## Generate all legal moves from all wrigglers in the state
    def Actions(self):
       legalMoves = []

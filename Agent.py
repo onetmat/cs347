@@ -26,10 +26,24 @@ class Agent:
    def GreedyBestFirstGraphSearch(self):
       # frontier contains the initial search node,
       # initialize an explored set as a hash table
-      self.explored = dict()
+      explored = dict()
 
       # remove the initial searchnode
-      self.currentSearchNode = self.frontier.pop()
+      evalNode = self.frontier.pop()
+
+      # now, while the next node is not a goal node:
+      while not evalNode.ContainsGoalState():
+         # generate all actions
+         nextMoves = evalNode.Actions()
+
+         # and for each action
+         for nextMove in nextMoves:
+            # generate a SearchNode
+            newNode = self.GenerateSearchNodeFromMove(evalNode, nextMove)
+            # check if it's already in the explored set
+            # XXX XXX XXX XXX YOU LEFT OFF HERE! 
+            if self.explored.has_key(nodeHash):
+               # if 
 
    ## Perform a ID-DTFS search for the goal node
    def IterativeDepthDTFS_Solve(self):
