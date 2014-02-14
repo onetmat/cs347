@@ -96,20 +96,20 @@ class State:
          # get tail position of blue wriggler
          tailPos = self.wrigglers[self.indexOfBlue].GetTailPosition()
          # determine which Euclidean is least
-         headEuclidean = self.GetEuclideanHeuristic(headPos, lowerRightCorner)
-         tailEuclidean = self.GetEuclideanHeuristic(tailPos, lowerRightCorner)
+         headHeuristic = self.GetTotalSquaresBetween(headPos, lowerRightCorner)
+         tailHeuristic = self.GetTotalSquaresBetween(tailPos, lowerRightCorner)
          # store heuristic cost
-         self.heuristic = min(headEuclidean, tailEuclidean)
+         self.heuristic = min(headHeuristic, tailHeuristic)
 
    ## Return the 2D Euclidean distance between two nodes.
    # @param start (col, row) of start tile
    # @param end (col, row) of end tile
    # Avoids taking square root for speed
-   def GetEuclideanHeuristic(self, start, end):
-      colsSquared = (start[0] + end[0]) ** 2
-      rowsSquared = (start[1] + end[1]) ** 2
+   def GetTotalSquaresBetween(self, start, end):
+      colsToGo = abs(start[0] - end[0])
+      rowsToGo = abs(start[1] - end[1])
 
-      return colsSquared + rowsSquared
+      return (colsToGo + rowsToGo)
 
    ## Have each wriggler update it's character representation
    # and put that in the puzzle string itself.
@@ -130,9 +130,7 @@ class State:
    # the head or tail resides at that "position"
 
    ## @var heuristicCost
-   # Value of the custom heuristic in play, evaluated on this state
-   # In this case, the heuristic is min( || (head, goal) ||, || (tail, goal) ||)
-   # where || ... || implies Euclidean distance
+   # h(n) of this state.
 
 if __name__ == "__main__":
    # test legal move determination

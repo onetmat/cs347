@@ -41,23 +41,12 @@ class Agent:
             # generate a SearchNode
             newNode = self.GenerateSearchNodeFromMove(evalNode, nextMove)
             nodeHash = newNode.GetNodeHash()
-            addNodeToFrontier = False
             # check if it's already in the explored set
             # Note that it is not possible to generate a state that
             # appears in both the frontier and explored set due to the
             # nature of this puzzle
-            if explored.has_key(nodeHash):
-               # should this node's path cost supersede it?
-               if newNode < explored[nodeHash]:
-                  # if so, remove the node on the explored set
-                  explored.pop(nodeHash)
-                  addNodeToFrontier = True
-            else:
+            if not explored.has_key(nodeHash):
                # not in explored set, go ahead and add to Frontier
-               addNodeToFrontier = True
-
-            if addNodeToFrontier:
-               # add node to frontier in sorted heap fashion
                heapq.heappush(self.frontier, newNode)
 
          # add evaluated node to explored set
@@ -214,7 +203,7 @@ class Agent:
       newSearchNode = SearchNode(newState, \
                                  searchNode, \
                                  move, \
-                                 searchNode.pathCost+1) # XXX - Will need to change this...
+                                 searchNode.pathCost+1)
 
       return newSearchNode
 
