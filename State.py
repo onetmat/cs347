@@ -37,10 +37,6 @@ class State:
       lowerRightCorner = self.puzzle.GetLowerRightCornerPosition()
       return self.wrigglers[self.indexOfBlue].HeadOrTailAtPos(lowerRightCorner)
 
-   ## Retrieve the hash value stored by the puzzle
-   def GetPuzzleHash(self):
-      return self.puzzle.GetPuzzleHash()
-
    ## Generate all legal moves from all wrigglers in the state
    def Actions(self):
       legalMoves = []
@@ -90,30 +86,62 @@ class State:
    ## Calculate the heuristic cost for this State.
    # @param which Variable for expansion later
    #    will ultimately allow heuristic selection
-   def CalculateHeuristic(self, which = 0):
-      if which == 0:
-         # Get goal position
-         lowerRightCorner = self.puzzle.GetLowerRightCornerPosition()
-         # get head position of blue wriggler
-         headPos = self.wrigglers[self.indexOfBlue].GetHeadPosition()
-         # get tail position of blue wriggler
-         tailPos = self.wrigglers[self.indexOfBlue].GetTailPosition()
-         # determine which Euclidean is least
-         #headHeuristic = self.GetTotalSquaresBetween(headPos, lowerRightCorner)
-         #tailHeuristic = self.GetTotalSquaresBetween(tailPos, lowerRightCorner)
-         #headHeuristic = self.GetCostOfMovement(headPos, lowerRightCorner)
-         #tailHeuristic = self.GetCostOfMovement(tailPos, lowerRightCorner)
-         #headHeuristic = len(BresLine(headPos, lowerRightCorner)) - 1
-         #tailHeuristic = len(BresLine(tailPos, lowerRightCorner)) - 1
-         headHeuristic = self.DigestBresLines(headPos, lowerRightCorner)
-         tailHeuristic = self.SimpleDigestBresLines(tailPos, lowerRightCorner)
-         # store heuristic cost
-         self.heuristic = min(headHeuristic, tailHeuristic)
+   def CalculateHeuristic(self):
+      # Get goal position
+      lowerRightCorner = self.puzzle.GetLowerRightCornerPosition()
+      # get head position of blue wriggler
+      headPos = self.wrigglers[self.indexOfBlue].GetHeadPosition()
+      # get tail position of blue wriggler
+      tailPos = self.wrigglers[self.indexOfBlue].GetTailPosition()
+
+
+      ## Manhattan distance is almost never used in the max
+      totSq = min( \
+         self.GetTotalSquaresBetween(headPos, lowerRightCorner), \
+         self.GetTotalSquaresBetween(tailPos, lowerRightCorner))       
+
+      ## Can't really tell if this is dominant
+      costOfMove = min( \
+         self.GetCostOfMovement(headPos, lowerRightCorner), \
+         self.GetCostOfMovement(tailPos, lowerRightCorner))
+
+      ## Almost never correct
+      bresLine = min( \
+         len(BresLine(headPos, lowerRightCorner)) - 1, \
+         len(BresLine(tailPos, lowerRightCorner)) - 1)
+
+      ## This actually returns a max on some occaisons
+      simpleDigestBresLine = min( \
+         self.SimpleDigestBresLines(headPos, lowerRightCorner),
+         self.SimpleDigestBresLines(tailPos, lowerRightCorner))
+
+      totCostBresLine = min (\
+         self.DigestBresLines(headPos, lowerRightCorner),
+         self.DigestBresLines(tailPos, lowerRightCorner))
+
+      # Euclidean distance is dominated by bres line
+      #euclidDistance = min (\
+         #self.EuclideanDistance(headPos, lowerRightCorner),
+         #self.EuclideanDistance(tailPos, lowerRightCorner))
+
+      #print "All heuristic costs: " +\
+         #str([totSq, costOfMove, bresLine, simpleDigestBresLine, totCostBresLine])
+      self.heuristic = max(totSq, costOfMove, bresLine, simpleDigestBresLine, totCostBresLine)
+
+   def EuclideanDistance(self, start, end):
+      dx = end[1] - start[1]
+      dy = end[0] - start[0]
+
+      return (dx ** 2 + dy ** 2) ** 0.5
+
+   def GetDirectPuzzleString(self):
+      return ''.join(self.puzzle.puzzle)
 
    def GetContinuousString(self):
       puzz = Puzzle()
       puzz.CopyFrom(self.puzzle)
 
+      puzz.BlockOffWrigglers()
       # replace all wrigglers with just their number
       for wrig in self.wrigglers:
          puzz.PlaceWrigglerAllNumber(wrig)
@@ -133,19 +161,29 @@ class State:
          totHeuristic += self.GetCostOfMovement(line[index], line[index+1])
 
       return totHeuristic
+
+   ## Look at the tile in the puzzle.
+   # If it's a wriggler body segment, the cost is 3
+   # if it's a wall or wriggler head/tail cost is two
+   # if it's open, cost is 1
+   def GetRelaxedCostOfNode(self, pos):
+      tileHCost = 0
+      if self.puzzle.PositionInBounds(pos):
+         if self.puzzle.IsOpen(pos):
+            lnCost = 1
+         elif self.puzzle.GetTile(pos[0], pos[1]) in ['^', 'v', '<', '>']:
+            lnCost = 3
+         else:
+            lnCost = 2
+         
+      return tileHCost
          
    def SimpleDigestBresLines(self, start, end):
       lnCost = 0
       line = BresLine(start, end)
       del line[0] # it always has first point in there
       for tile in line:
-         if self.puzzle.IsOpen((tile[0], tile[1])):
-            lnCost += 1
-         else:
-            if self.puzzle.GetTile(tile[0], tile[1]) == 'x':
-               lnCost += 2
-            else:
-               lnCost += 4
+         lnCost += self.GetRelaxedCostOfNode(tile)
       return lnCost
             
 
@@ -179,14 +217,7 @@ class State:
       (currCol, row) = startPos
       currCol += 1
       while currCol <= colCount:
-         if self.puzzle.PositionInBounds((currCol, row)) and \
-            self.puzzle.IsOpen((currCol, row)):
-            rowCost += 1
-         else:
-            if self.puzzle.GetTile(currCol, row) == 'x':
-               rowCost += 2
-            else:
-               rowCost += 3
+         rowCost += self.GetRelaxedCostOfNode((currCol, row))
          currCol += 1
       return rowCost
 
@@ -201,14 +232,7 @@ class State:
       (col, currRow) = startPos
       currRow += 1
       while currRow <= rowCount:
-         if self.puzzle.PositionInBounds((col, currRow)) and \
-            self.puzzle.IsOpen((col, currRow)):
-            colCost += 1
-         else:
-            if self.puzzle.GetTile(col, currRow) == 'x':
-               colCost += 2
-            else:
-               colCost += 3
+         colCost += self.GetRelaxedCostOfNode((col, currRow))
          currRow += 1
       return colCost
 
@@ -216,6 +240,25 @@ class State:
    # and put that in the puzzle string itself.
    # Return the string representation of this action
    def ConstructSolution(self):
+      return str(self)
+
+   ## Return a representation of the puzzle with all wrigglers
+   # placed.
+   def __str__(self):
+      for wrig in self.wrigglers:
+         numSegs = len(wrig.segments)
+         if numSegs > 0:
+            wrig.head.UpdateSegmentCharacter(wrig.segments[0])
+            for seg in xrange(0, numSegs-1):
+               wrig.segments[seg].UpdateSegmentCharacter(\
+                  wrig.segments[seg+1])
+
+            wrig.segments[-1].UpdateSegmentCharacter(wrig.tail)
+         else:
+            wrig.head.UpdateSegmentCharacter(wrig.tail)
+
+         self.puzzle.PlaceWriggler(wrig)
+      
       return str(self.puzzle)
 
    ## @var puzzle

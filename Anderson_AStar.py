@@ -34,3 +34,5 @@ if initialPuzzle is not None:
          solnFile.write(solution + '\n')
          solnFile.write(str(endTime - startTime) + '\n')
          solnFile.write(str(foundGoal.pathCost) + '\n')
+      else:
+         print "DID NOT FIND GOAL!"

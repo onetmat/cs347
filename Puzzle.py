@@ -5,8 +5,6 @@
 # There is no difference between a Puzzle and a world state, and therefore
 # a Puzzle may be queried for information concerning movement.
 
-import hashlib
-
 ## The puzzle class allows queries at a given (col, row),
 # is aware of how many wrigglers are on the board, and can
 # be considered the world state.
@@ -24,7 +22,6 @@ class Puzzle:
       self.numRows = 0
       self.numWrigglers = 0
       self.puzzle = []
-      self.hashValue = hashlib.new('sha1')
 
    ## Clone an instance of a puzzle
    # @param other The source of the clone
@@ -34,24 +31,9 @@ class Puzzle:
       self.numWrigglers = other.numWrigglers
       self.puzzle = list(other.puzzle)
 
-   ## Add a line to the puzzle, incorporating its
-   # contents into the hash value.
-   # @param tiles The next puzzle tiles to add
+   ## Add a line to the puzzle
    def AddLine(self, tiles):
       self.puzzle += tiles
-      # convert the line into a string
-      tileStr = ''.join(tiles)
-      # add hash value
-      self.hashValue.update(tileStr)
-
-   ## Re-generate the hash associated with this puzzle object
-   # used to incorporate a copy or move.
-   def ReHashPuzzle(self):
-      self.hashValue = hashlib.new('sha1')
-      # change the puzzle tiles into one string
-      # and hash it
-      tileStr = ''.join(self.puzzle)
-      self.hashValue.update(tileStr)
 
    ## Make any wriggler's body, etc an x
    def BlockOffWrigglers(self):
@@ -66,11 +48,6 @@ class Puzzle:
          else:
             newPuzzle.append(ch)
       self.puzzle = newPuzzle
-
-   ## Retrieve the stored hash value representing
-   # this puzzle
-   def GetPuzzleHash(self):
-      return self.hashValue.hexdigest()
 
    ## Combine the row and col to get the index of the
    # specified tile in the list
@@ -124,18 +101,18 @@ class Puzzle:
    ## Put a hash-able version of the wrigglers on the board
    # @param wriggler the wriggler to plae
    def PlaceWrigglerAllNumber(self,wriggler):
-      self.SetTile(wriggler.head.pos[0], \
-                   wriggler.head.pos[1], \
-                   wriggler.tail.idNumber)
+      #self.SetTile(wriggler.head.pos[0], \
+                   #wriggler.head.pos[1], \
+                   #wriggler.tail.idNumber)
       
       self.SetTile(wriggler.tail.pos[0], \
                    wriggler.tail.pos[1], \
                    wriggler.tail.idNumber)
 
-      for segment in wriggler.segments:
-         self.SetTile(segment.pos[0], \
-                      segment.pos[1], \
-                      wriggler.tail.idNumber)
+      #for segment in wriggler.segments:
+         #self.SetTile(segment.pos[0], \
+                      #segment.pos[1], \
+                      #wriggler.tail.idNumber)
 
    ## Given a col, row, and desired char, update the puzzle
    # @param col Column of tile to set

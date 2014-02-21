@@ -59,7 +59,7 @@ class SearchNode:
       if self.action is not None:
          strRep += str(self.action) + "\n"
       if self.state.puzzle is not None:
-         strRep += str(self.state.puzzle) + "\n"
+         strRep += str(self.state) + "\n"
       strRep += str(self.pathCost)
       return strRep
 
@@ -79,7 +79,7 @@ class SearchNode:
       return lessThan
 
    def __eq__(self, other):
-      return self.state.GetHeuristicCost() == other.state.GetHeuristicCost()
+      return self.state.GetDirectPuzzleString() == other.state.GetDirectPuzzleString()
 
    ## @var state
    # The world state (puzzle) represented by this search node

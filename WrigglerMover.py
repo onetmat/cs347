@@ -24,8 +24,6 @@ def MoveWriggler(wriggler, move, puzzle):
       newPuzzle.CopyFrom(puzzle)
       newPuzzle.ClearWriggler(wriggler)
       newPuzzle.PlaceWriggler(newWriggler)
-      # update the hash value
-      newPuzzle.ReHashPuzzle()
 
    except:
       raise
@@ -61,20 +59,6 @@ def UpdateWriggler(wriggler, move):
          else:
             raise Exception ("Invalid pieceMoved set in a move!")
 
-         # Update the head and body segment characters
-         # XXX - Thought I had a better way to do this...?
-         numSegs = len(newWriggler.segments)
-         if numSegs > 0:
-            newWriggler.head.UpdateSegmentCharacter(newWriggler.segments[0])
-
-            ## Update segments relative to each other
-            for segIndex in xrange(0, numSegs-1):
-               newWriggler.segments[segIndex].UpdateSegmentCharacter( \
-                  newWriggler.segments[segIndex+1])
-
-            newWriggler.segments[-1].UpdateSegmentCharacter(newWriggler.tail)
-         else:
-            newWriggler.head.UpdateSegmentCharacter(newWriggler.tail)
    except:
       raise
 
