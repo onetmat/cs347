@@ -64,9 +64,7 @@ class Agent:
          
          # pop the next node to be evaluated from the queue
          if len(self.frontier) > 0:
-            print "Frontier is " + str(len(self.frontier))
             evalNode = heapq.heappop(self.frontier)
-            print "Total cost is " + str(evalNode.totalCost)
          else:
             # ... just in case, set eval node to none and break
             evalNode = None
