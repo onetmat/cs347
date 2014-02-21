@@ -25,7 +25,9 @@ class Agent:
    def AStarSearch(self):
       # frontier contains the initial search node,
       # initialize an explored set as a hash table
-      explored = dict()
+      explored = dict() 
+      # Reduce time required to check if node is already in frontier
+      frontierDict = dict()
 
       # remove the initial searchnode
       evalNode = self.frontier.pop()
@@ -47,9 +49,10 @@ class Agent:
             # appears in both the frontier and explored set due to the
             # nature of this puzzle
             if not explored.has_key(nodeHash):
-               if not newNode in self.frontier:
+               if not frontierDict.has_key(nodeHash):
                   # not in explored set, go ahead and add to Frontier
                   heapq.heappush(self.frontier, newNode)
+                  frontierDict[nodeHash] = True
             else:
                seenNodeCost = explored[nodeHash]
                if seenNodeCost > newNode.pathCost:

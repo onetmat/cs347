@@ -98,22 +98,6 @@ class Puzzle:
                       segment.pos[1], \
                       segment.dirOfNext)
 
-   ## Put a hash-able version of the wrigglers on the board
-   # @param wriggler the wriggler to plae
-   def PlaceWrigglerAllNumber(self,wriggler):
-      #self.SetTile(wriggler.head.pos[0], \
-                   #wriggler.head.pos[1], \
-                   #wriggler.tail.idNumber)
-      
-      self.SetTile(wriggler.tail.pos[0], \
-                   wriggler.tail.pos[1], \
-                   wriggler.tail.idNumber)
-
-      #for segment in wriggler.segments:
-         #self.SetTile(segment.pos[0], \
-                      #segment.pos[1], \
-                      #wriggler.tail.idNumber)
-
    ## Given a col, row, and desired char, update the puzzle
    # @param col Column of tile to set
    # @param row Row of tile to set

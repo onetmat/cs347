@@ -29,6 +29,12 @@ class State:
 
       # Calculate the heuristic cost in play
       self.CalculateHeuristic()
+      # store off a string representation for hash purposes
+      self.puzzStr = ''.join(self.puzzle.puzzle)
+
+
+   def GetDirectPuzzleString(self):
+      return self.puzzStr
 
    ## Determine if the head or tail of the blue wriggler
    # is located in the lower right corner of the puzzle.
@@ -111,9 +117,9 @@ class State:
          len(BresLine(tailPos, lowerRightCorner)) - 1)
 
       ## This actually returns a max on some occaisons
-      simpleDigestBresLine = min( \
-         self.SimpleDigestBresLines(headPos, lowerRightCorner),
-         self.SimpleDigestBresLines(tailPos, lowerRightCorner))
+      #simpleDigestBresLine = min( \
+         #self.SimpleDigestBresLines(headPos, lowerRightCorner),
+         #self.SimpleDigestBresLines(tailPos, lowerRightCorner))
 
       totCostBresLine = min (\
          self.DigestBresLines(headPos, lowerRightCorner),
@@ -126,29 +132,14 @@ class State:
 
       #print "All heuristic costs: " +\
          #str([totSq, costOfMove, bresLine, simpleDigestBresLine, totCostBresLine])
-      self.heuristic = max(totSq, costOfMove, bresLine, simpleDigestBresLine, totCostBresLine)
+      #self.heuristic = max(totSq, costOfMove, bresLine, simpleDigestBresLine, totCostBresLine)
+      self.heuristic = max(totSq, costOfMove, bresLine, totCostBresLine)
 
    def EuclideanDistance(self, start, end):
       dx = end[1] - start[1]
       dy = end[0] - start[0]
 
       return (dx ** 2 + dy ** 2) ** 0.5
-
-   def GetDirectPuzzleString(self):
-      return ''.join(self.puzzle.puzzle)
-
-   def GetContinuousString(self):
-      puzz = Puzzle()
-      puzz.CopyFrom(self.puzzle)
-
-      puzz.BlockOffWrigglers()
-      # replace all wrigglers with just their number
-      for wrig in self.wrigglers:
-         puzz.PlaceWrigglerAllNumber(wrig)
-      # make the entire thing on string
-      # and return it
-      contStr = ''.join(puzz.puzzle)
-      return contStr
 
    def DigestBresLines(self, start, end):
       # Get a line from start to end
