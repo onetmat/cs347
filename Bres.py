@@ -1,4 +1,7 @@
-
+## @file Bres.py
+# @author Mathew Anderson
+# @brief Stores a method to execute Bresenham's line drawing algorithm.
+# Got this info from Wikipedia's page on Bresenham's algo.
 
 # Return a list of coordinates (col, row) that would be touched
 # by a straight line from start to end.

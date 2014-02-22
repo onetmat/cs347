@@ -116,7 +116,7 @@ class State:
          len(BresLine(headPos, lowerRightCorner)) - 1, \
          len(BresLine(tailPos, lowerRightCorner)) - 1)
 
-      ## This actually returns a max on some occaisons
+      ## This will return a non-unique max
       #simpleDigestBresLine = min( \
          #self.SimpleDigestBresLines(headPos, lowerRightCorner),
          #self.SimpleDigestBresLines(tailPos, lowerRightCorner))
@@ -157,6 +157,7 @@ class State:
    # If it's a wriggler body segment, the cost is 3
    # if it's a wall or wriggler head/tail cost is two
    # if it's open, cost is 1
+   # @param (col, row) tile to consider
    def GetRelaxedCostOfNode(self, pos):
       tileHCost = 0
       if self.puzzle.PositionInBounds(pos):
@@ -168,7 +169,11 @@ class State:
             lnCost = 2
          
       return tileHCost
-         
+
+   ## Move through a line, but take into account puzzle tile
+   # movement costs.
+   # @param start (col, row) starting position of line
+   # @param end (col, row) ending position of line
    def SimpleDigestBresLines(self, start, end):
       lnCost = 0
       line = BresLine(start, end)
@@ -178,7 +183,7 @@ class State:
       return lnCost
             
 
-   ## Return the 2D Euclidean distance between two nodes.
+   ## Return the Manhattan distance between two nodes.
    # @param start (col, row) of start tile
    # @param end (col, row) of end tile
    # Avoids taking square root for speed
@@ -188,6 +193,11 @@ class State:
 
       return (colsToGo + rowsToGo)
 
+   ## Calculate a cost from a given position to a given end state
+   # Manhattan style, but take into account going first along the row
+   # and then along the column, and also take into account tile costs.
+   # @param start (col, row) current position of wriggler
+   # @param end (col, row) goal tile
    def GetCostOfMovement(self, start, end):
       colCostOfMovement = 0
       colCostOfMovement += self.ScanCol(start, end[1])
@@ -198,7 +208,7 @@ class State:
       return min(colCostOfMovement, rowCostOfMovement)
 
    ## Scan a row for heuristic movement costs. Empty sqauare = 1
-   # blocked counts for two (blocked == not empty).
+   # blocked counts for more (blocked == not empty).
    # @param startPos The (col, row) position from which the scan
    # should start
    # @param colCount Zero-based end of column
@@ -213,7 +223,7 @@ class State:
       return rowCost
 
    ## Scan a col for heuristic movement costs. Empty sqauare = 1
-   # blocked counts for two (blocked == not empty).
+   # blocked counts for more (blocked == not empty).
    # @param startPos The (col, row) position from which the scan
    # should start
    # @param rowCount Zero-based end of rows
