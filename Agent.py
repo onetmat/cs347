@@ -1,6 +1,7 @@
 ## @file Agent.py
 # @author Mathew Anderson
 # @brief Defintion of Agent, common to all types
+# Agents perform searches on puzzles
 
 from SearchNode import SearchNode
 from WrigglerMover import MoveWriggler
